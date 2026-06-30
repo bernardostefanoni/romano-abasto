@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+  }
+}
+
+@layer components {
+  .tag-price {
+    @apply font-tag text-leaf;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-crate px-5 py-2.5 text-sm font-semibold text-cream
+           transition-colors hover:bg-crateDark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crateDark;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-leaf px-5 py-2.5 text-sm font-semibold text-leaf
+           transition-colors hover:bg-leaf hover:text-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf;
+  }
+
+  .section-title {
+    @apply font-display text-2xl sm:text-3xl font-semibold text-charcoal;
+  }
+
+  .crate-card {
+    @apply rounded-card border border-line bg-white shadow-soft;
+  }
+
+  .stepper-btn {
+    @apply flex h-8 w-8 items-center justify-center rounded-full border border-line text-leaf transition-colors hover:bg-creamDark;
+  }
+}
+
+/* Scrollbar discreta para carruseles */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
