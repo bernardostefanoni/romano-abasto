@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
 
-// Convierte el nombre de categoría del ERP a un id normalizado para la web
 function normalizarCategoria(nombre) {
   if (!nombre) return 'otros'
   const n = nombre.toLowerCase()
@@ -14,10 +13,10 @@ function normalizarCategoria(nombre) {
 }
 
 export function useProducts() {
-  const [products, setProducts] = useState([])
+  const [products, setProducts]   = useState([])
   const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [loading, setLoading]     = useState(true)
+  const [error, setError]         = useState(null)
 
   useEffect(() => {
     async function fetchProducts() {
@@ -31,27 +30,23 @@ export function useProducts() {
 
         if (error) throw error
 
-        // Normalizar productos para que sean compatibles con los componentes existentes
-        const normalized = data.map((p, i) => ({
-          id:       p.id,
-          name:     p.nombre,
-          category: normalizarCategoria(p.categoria),
-          unit:     p.unidad,
-          price:    Number(p.precio),
-          featured: p.destacado,
-          img:      p.imagen_url || defaultImage(p.categoria),
+        const normalized = data.map((p) => ({
+          id:            p.id,
+          name:          p.nombre,
+          category:      normalizarCategoria(p.categoria),
+          unit:          p.unidad_display || p.unidad,
+          precio_por:    p.unidad_display || p.unidad,
+          price:         Number(p.precio),
+          featured:      p.destacado,
+          paso:          Number(p.paso) || 1,
+          img:           p.imagen_url || defaultImage(p.categoria),
         }))
 
-        // Armar categorías dinámicas desde los datos reales
         const catMap = {}
         data.forEach((p) => {
           const id = normalizarCategoria(p.categoria)
           if (!catMap[id]) {
-            catMap[id] = {
-              id,
-              name: p.categoria,
-              icon: catIcon(id),
-            }
+            catMap[id] = { id, name: p.categoria, icon: catIcon(id) }
           }
         })
 
@@ -63,7 +58,6 @@ export function useProducts() {
         setLoading(false)
       }
     }
-
     fetchProducts()
   }, [])
 
@@ -72,20 +66,14 @@ export function useProducts() {
 
 function catIcon(id) {
   const icons = {
-    'frutas-verduras': '🥬',
-    'huevos':          '🥚',
-    'limpieza':        '🧼',
-    'panaderia':       '🥖',
-    'almacen':         '🍪',
-    'pasteleria':      '🧁',
-    'panificados':     '🥐',
-    'otros':           '📦',
+    'frutas-verduras': '🥬', 'huevos': '🥚', 'limpieza': '🧼',
+    'panaderia': '🥖', 'almacen': '🍪', 'pasteleria': '🧁',
+    'panificados': '🥐', 'otros': '📦',
   }
   return icons[id] || '📦'
 }
 
 function defaultImage(categoria) {
-  // Imágenes genéricas por categoría cuando no hay imagen cargada
   const imgs = {
     'Frutas y verduras': 'https://images.unsplash.com/photo-1610348725531-843dff563e2c?q=80&w=400&auto=format&fit=crop',
     'Huevos':            'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?q=80&w=400&auto=format&fit=crop',
