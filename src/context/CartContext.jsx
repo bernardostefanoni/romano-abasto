@@ -28,7 +28,7 @@ export function CartProvider({ children }) {
   }
 
   const cartList = useMemo(() => Object.values(items), [items])
-  const totalItems = useMemo(() => cartList.reduce((s, i) => s + i.qty, 0), [cartList])
+  const totalItems = useMemo(() => cartList.length, [cartList])
   const totalPrice = useMemo(
     () => cartList.reduce((s, i) => s + i.qty * i.product.price, 0),
     [cartList]
