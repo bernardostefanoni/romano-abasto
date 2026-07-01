@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 
 const WHATSAPP_NUMBER = '5493814571329'
-const COSTO_SERVICIO  = 3500  // precio del SKU "Servicio de abastecimiento programado"
+const COSTO_SERVICIO  = 3500
 
 function formatPrice(n) {
-  return Number(n).toLocaleString('es-AR')
+  return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
 
 export default function Carrito() {
@@ -29,10 +29,16 @@ export default function Carrito() {
 
   function validar() {
     const e = {}
-    if (!form.nombre.trim())    e.nombre    = 'Ingresá tu nombre'
-    if (!form.direccion.trim()) e.direccion = 'Ingresá la dirección de entrega'
-    if (!form.celular.trim())   e.celular   = 'Ingresá el celular de quien recibe'
+    if (!form.nombre.trim())    e.nombre    = 'Ingresa tu nombre'
+    if (!form.direccion.trim()) e.direccion = 'Ingresa la direccion de entrega'
+    if (!form.celular.trim())   e.celular   = 'Ingresa el celular de quien recibe'
     return e
+  }
+
+  function cambiarQty(product, qty, delta) {
+    const paso = product.paso || 1
+    const next = Math.max(0, Math.round((qty + delta * paso) * 100) / 100)
+    setQty(product, next)
   }
 
   function enviarPorWhatsApp() {
@@ -44,28 +50,30 @@ export default function Carrito() {
 
     const lineas = cartList.map(
       ({ product, qty }) =>
-        `• ${product.name} x${qty} ${product.unit} — $${formatPrice(product.price * qty)}`
+        `- ${product.name} x${qty} --- $${formatPrice(product.price * qty)}`
     )
 
-    const mensaje = [
-      '🛒 *Nuevo pedido — Romano Abasto*',
-      '',
+    const partes = [
+      'NUEVO PEDIDO - Romano Abasto',
+      '--------------------------------',
       ...lineas,
+      '--------------------------------',
+      `Servicio de abastecimiento: $${formatPrice(COSTO_SERVICIO)}`,
+      `*TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
       '',
-      `📦 Servicio de abastecimiento: $${formatPrice(COSTO_SERVICIO)}`,
-      `💰 *Total estimado: $${formatPrice(totalEstimado)}*`,
+      'El total informado es estimativo. El valor final se calculara segun el peso real de los productos al momento de preparar el pedido.',
       '',
-      '⚠️ El total informado es estimativo. El valor final se calculará según el peso real de los productos al momento de preparar el pedido.',
-      '',
-      '👤 *Datos de entrega*',
+      'DATOS DE ENTREGA',
       `Nombre: ${form.nombre}`,
-      `Dirección: ${form.direccion}`,
+      `Direccion: ${form.direccion}`,
       `Celular: ${form.celular}`,
-      form.nota ? `Nota: ${form.nota}` : '',
     ]
-      .filter((l) => l !== undefined)
-      .join('\n')
 
+    if (form.nota.trim()) {
+      partes.push(`Nota: ${form.nota}`)
+    }
+
+    const mensaje = partes.join('\n')
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`
     window.open(url, '_blank')
   }
@@ -75,10 +83,10 @@ export default function Carrito() {
       <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
         <span aria-hidden className="text-4xl">🧺</span>
         <h1 className="mt-4 font-display text-2xl font-semibold text-charcoal">
-          Tu carrito está vacío
+          Tu carrito esta vacio
         </h1>
         <p className="mt-2 text-sm text-charcoal/60">
-          Sumá productos frescos del mercado para armar tu pedido.
+          Suma productos frescos del mercado para armar tu pedido.
         </p>
         <Link to="/productos" className="btn-primary mt-6 inline-flex">
           Ver productos
@@ -93,27 +101,41 @@ export default function Carrito() {
 
       {/* Lista de productos */}
       <div className="mt-6 divide-y divide-line rounded-card border border-line bg-white shadow-soft">
-        {cartList.map(({ product, qty }) => (
-          <div key={product.id} className="flex items-center gap-4 p-4">
-            <img
-              src={product.img}
-              alt={product.name}
-              className="h-16 w-16 rounded-lg object-cover"
-            />
-            <div className="flex-1">
-              <p className="font-display font-semibold text-charcoal">{product.name}</p>
-              <p className="text-xs text-charcoal/50">{product.unit}</p>
+        {cartList.map(({ product, qty }) => {
+          const paso = product.paso || 1
+          const esPorKg = paso === 0.5
+          return (
+            <div key={product.id} className="flex items-center gap-4 p-4">
+              <img
+                src={product.img}
+                alt={product.name}
+                className="h-16 w-16 rounded-lg object-cover"
+              />
+              <div className="flex-1">
+                <p className="font-display font-semibold text-charcoal">{product.name}</p>
+                <p className="text-xs text-charcoal/50">
+                  {esPorKg ? 'kg' : product.unit}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  className="stepper-btn"
+                  onClick={() => cambiarQty(product, qty, -1)}
+                >−</button>
+                <span className="w-10 text-center text-sm font-semibold">
+                  {esPorKg ? `${qty} kg` : qty}
+                </span>
+                <button
+                  className="stepper-btn"
+                  onClick={() => cambiarQty(product, qty, 1)}
+                >+</button>
+              </div>
+              <span className="tag-price w-28 text-right text-sm font-bold">
+                ${formatPrice(product.price * qty)}
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              <button className="stepper-btn" onClick={() => setQty(product, qty - 1)}>−</button>
-              <span className="w-6 text-center text-sm font-semibold">{qty}</span>
-              <button className="stepper-btn" onClick={() => setQty(product, qty + 1)}>+</button>
-            </div>
-            <span className="tag-price w-28 text-right text-sm font-bold">
-              ${formatPrice(product.price * qty)}
-            </span>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Resumen de precios */}
@@ -131,7 +153,8 @@ export default function Carrito() {
           <span className="tag-price text-xl font-bold">${formatPrice(totalEstimado)}</span>
         </div>
         <p className="mt-2 text-xs text-charcoal/50">
-          ⚠️ El total informado es estimativo. El valor final se calculará según el peso real de los 		     productos al momento de preparar el pedido.
+          El total informado es estimativo. El valor final se calculara segun el peso real
+          de los productos al momento de preparar el pedido.
         </p>
       </div>
 
@@ -139,11 +162,10 @@ export default function Carrito() {
       <div className="mt-8">
         <h2 className="font-display text-xl font-semibold text-charcoal">Datos de entrega</h2>
         <p className="mt-1 text-sm text-charcoal/60">
-          Completá los datos de quien va a recibir el pedido.
+          Completa los datos de quien va a recibir el pedido.
         </p>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {/* Nombre */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Nombre completo <span className="text-crate">*</span>
@@ -152,17 +174,14 @@ export default function Carrito() {
               name="nombre"
               value={form.nombre}
               onChange={handleChange}
-              placeholder="Juan Pérez"
+              placeholder="Juan Perez"
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
                 errors.nombre ? 'border-crate bg-crate/5' : 'border-line bg-white'
               }`}
             />
-            {errors.nombre && (
-              <span className="text-xs text-crate">{errors.nombre}</span>
-            )}
+            {errors.nombre && <span className="text-xs text-crate">{errors.nombre}</span>}
           </div>
 
-          {/* Celular */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Celular de quien recibe <span className="text-crate">*</span>
@@ -176,15 +195,12 @@ export default function Carrito() {
                 errors.celular ? 'border-crate bg-crate/5' : 'border-line bg-white'
               }`}
             />
-            {errors.celular && (
-              <span className="text-xs text-crate">{errors.celular}</span>
-            )}
+            {errors.celular && <span className="text-xs text-crate">{errors.celular}</span>}
           </div>
 
-          {/* Dirección */}
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label className="text-sm font-medium text-charcoal">
-              Dirección de entrega <span className="text-crate">*</span>
+              Direccion de entrega <span className="text-crate">*</span>
             </label>
             <input
               name="direccion"
@@ -195,33 +211,30 @@ export default function Carrito() {
                 errors.direccion ? 'border-crate bg-crate/5' : 'border-line bg-white'
               }`}
             />
-            {errors.direccion && (
-              <span className="text-xs text-crate">{errors.direccion}</span>
-            )}
+            {errors.direccion && <span className="text-xs text-crate">{errors.direccion}</span>}
           </div>
 
-          {/* Nota opcional */}
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label className="text-sm font-medium text-charcoal">
               Nota para el repartidor{' '}
-              <span className="text-charcoal/40 font-normal">(opcional)</span>
+              <span className="font-normal text-charcoal/40">(opcional)</span>
             </label>
             <textarea
               name="nota"
               value={form.nota}
               onChange={handleChange}
-              placeholder="Ej: dejar en portería, tocar timbre 2B, etc."
+              placeholder="Ej: dejar en porteria, tocar timbre 2B, etc."
               rows={3}
-              className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf resize-none"
+              className="resize-none rounded-xl border border-line bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf"
             />
           </div>
         </div>
       </div>
 
-      {/* Botón de envío */}
+      {/* Botón WhatsApp */}
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link to="/productos" className="text-sm text-charcoal/60 hover:text-leaf">
-          ← Seguir comprando
+          Seguir comprando
         </Link>
         <button
           onClick={enviarPorWhatsApp}
