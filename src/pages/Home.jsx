@@ -3,28 +3,40 @@ import { Link } from 'react-router-dom'
 import Hero from '../components/Hero.jsx'
 import ProductCarousel from '../components/ProductCarousel.jsx'
 import PackCard from '../components/PackCard.jsx'
-import { products, packs, deliveryZones } from '../data/catalog.js'
+import { packs, deliveryZones } from '../data/catalog.js'
+import { useProducts } from '../hooks/useProducts.js'
 
 export default function Home() {
+  const { products, loading } = useProducts()
   const destacados = products.filter((p) => p.featured)
+  const primeros = products.slice(0, 8)
 
   return (
     <>
       <Hero />
 
-      <ProductCarousel
-        title="Lo más pedido"
-        icon="🔥"
-        products={products.slice(0, 8)}
-        viewAllTo="/productos"
-      />
-
-      <ProductCarousel
-        title="Productos destacados"
-        icon="⭐"
-        products={destacados.concat(products.slice(8, 10))}
-        viewAllTo="/productos"
-      />
+      {loading ? (
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center text-sm text-charcoal/50">
+          Cargando productos...
+        </div>
+      ) : (
+        <>
+          <ProductCarousel
+            title="Lo más pedido"
+            icon="🔥"
+            products={primeros}
+            viewAllTo="/productos"
+          />
+          {destacados.length > 0 && (
+            <ProductCarousel
+              title="Productos destacados"
+              icon="⭐"
+              products={destacados}
+              viewAllTo="/productos"
+            />
+          )}
+        </>
+      )}
 
       {/* Packs */}
       <section className="bg-creamDark py-12">
@@ -45,11 +57,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Banner promocional */}
+      {/* Banner gastronómico */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="flex flex-col items-center gap-6 rounded-card bg-sage/25 p-8 sm:flex-row sm:p-10">
           <div className="flex-1">
-            <span className="rounded-full bg-leaf px-3 py-1 text-xs font-semibold text-cream">Para tu negocio</span>
+            <span className="rounded-full bg-leaf px-3 py-1 text-xs font-semibold text-cream">
+              Para tu negocio
+            </span>
             <h3 className="mt-3 font-display text-2xl font-semibold text-charcoal">
               Abastecé tu cocina con entregas recurrentes
             </h3>
@@ -75,8 +89,9 @@ export default function Home() {
       <section className="bg-mustard/15 py-14">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="section-title">¿Llegamos hasta tu casa?</h2>
-          <p className="mt-2 text-sm text-charcoal/70">Repartimos en motocarro por zonas, dos veces por semana.</p>
-
+          <p className="mt-2 text-sm text-charcoal/70">
+            Repartimos en motocarro por zonas, dos veces por semana.
+          </p>
           <div className="mt-8 divide-y divide-line overflow-hidden rounded-card border border-line bg-white text-left shadow-soft">
             {deliveryZones.map((z) => (
               <div key={z.zone} className="flex items-center justify-between gap-3 px-5 py-3.5">
@@ -89,7 +104,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-
           <Link to="/zonas" className="btn-primary mt-8 inline-flex">
             Comprobá tu zona
           </Link>
