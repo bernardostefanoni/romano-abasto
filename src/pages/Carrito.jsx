@@ -55,7 +55,7 @@ export default function Carrito() {
       `📦 Servicio de abastecimiento: $${formatPrice(COSTO_SERVICIO)}`,
       `💰 *Total estimado: $${formatPrice(totalEstimado)}*`,
       '',
-      '⚠️ _El total es estimativo. El valor final se confirmará una vez pesados los productos y cargados los pesos al sistema._',
+      '⚠️ El total informado es estimativo. El valor final se calculará según el peso real de los productos al momento de preparar el pedido.',
       '',
       '👤 *Datos de entrega*',
       `Nombre: ${form.nombre}`,
@@ -131,8 +131,7 @@ export default function Carrito() {
           <span className="tag-price text-xl font-bold">${formatPrice(totalEstimado)}</span>
         </div>
         <p className="mt-2 text-xs text-charcoal/50">
-          ⚠️ El total es estimativo. El valor final se confirmará una vez pesados los productos
-          y cargados los pesos al sistema.
+          ⚠️ El total informado es estimativo. El valor final se calculará según el peso real de los 		     productos al momento de preparar el pedido.
         </p>
       </div>
 
