@@ -64,7 +64,7 @@ export default function ProductCard({ product }) {
             className="rounded-full bg-leaf px-3 py-2 text-xs font-semibold text-cream transition-colors hover:bg-leafLight"
             onClick={() => change(paso)}
           >
-            {esPorKg ? `+ ${paso} kg` : 'Agregar'}
+            'Agregar'
           </button>
         </div>
 
