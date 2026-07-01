@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 
 const WHATSAPP_NUMBER = '5493814571329'
-const COSTO_SERVICIO  = 3500
+
+const ZONAS = [
+  { id: 'smt',       label: 'San Miguel de Tucumán', costo: 3500, disponible: true },
+  { id: 'alderetes', label: 'Alderetes',              costo: 2000, disponible: true },
+  { id: 'yerba',     label: 'Yerba Buena (próximamente)', costo: 0, disponible: false },
+]
+
+const MEDIOS_PAGO = ['Transferencia bancaria', 'Efectivo']
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
@@ -13,14 +20,18 @@ export default function Carrito() {
   const { cartList, setQty, totalPrice } = useCart()
 
   const [form, setForm] = useState({
-    nombre:    '',
-    direccion: '',
-    celular:   '',
-    nota:      '',
+    nombre:     '',
+    direccion:  '',
+    celular:    '',
+    zona:       '',
+    medio_pago: '',
+    nota:       '',
   })
   const [errors, setErrors] = useState({})
 
-  const totalEstimado = totalPrice + COSTO_SERVICIO
+  const zonaSeleccionada = ZONAS.find((z) => z.id === form.zona)
+  const costoServicio    = zonaSeleccionada?.costo ?? null
+  const totalEstimado    = costoServicio !== null ? totalPrice + costoServicio : null
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -29,9 +40,11 @@ export default function Carrito() {
 
   function validar() {
     const e = {}
-    if (!form.nombre.trim())    e.nombre    = 'Ingresa tu nombre'
-    if (!form.direccion.trim()) e.direccion = 'Ingresa la direccion de entrega'
-    if (!form.celular.trim())   e.celular   = 'Ingresa el celular de quien recibe'
+    if (!form.nombre.trim())     e.nombre     = 'Ingresá tu nombre'
+    if (!form.direccion.trim())  e.direccion  = 'Ingresá la dirección de entrega'
+    if (!form.celular.trim())    e.celular    = 'Ingresá el celular de quien recibe'
+    if (!form.zona)              e.zona       = 'Seleccioná tu zona de entrega'
+    if (!form.medio_pago)        e.medio_pago = 'Seleccioná un medio de pago'
     return e
   }
 
@@ -58,7 +71,7 @@ export default function Carrito() {
       '--------------------------------',
       ...lineas,
       '--------------------------------',
-      `Servicio de abastecimiento: $${formatPrice(COSTO_SERVICIO)}`,
+      `Servicio de abastecimiento (${zonaSeleccionada.label}): $${formatPrice(costoServicio)}`,
       `*TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
       '',
       'El total informado es estimativo. El valor final se calculara segun el peso real de los productos al momento de preparar el pedido.',
@@ -66,12 +79,12 @@ export default function Carrito() {
       'DATOS DE ENTREGA',
       `Nombre: ${form.nombre}`,
       `Direccion: ${form.direccion}`,
+      `Zona: ${zonaSeleccionada.label}`,
       `Celular: ${form.celular}`,
+      `Medio de pago: ${form.medio_pago}`,
     ]
 
-    if (form.nota.trim()) {
-      partes.push(`Nota: ${form.nota}`)
-    }
+    if (form.nota.trim()) partes.push(`Nota: ${form.nota}`)
 
     const mensaje = partes.join('\n')
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`
@@ -83,10 +96,10 @@ export default function Carrito() {
       <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
         <span aria-hidden className="text-4xl">🧺</span>
         <h1 className="mt-4 font-display text-2xl font-semibold text-charcoal">
-          Tu carrito esta vacio
+          Tu carrito está vacío
         </h1>
         <p className="mt-2 text-sm text-charcoal/60">
-          Suma productos frescos del mercado para armar tu pedido.
+          Sumá productos frescos del mercado para armar tu pedido.
         </p>
         <Link to="/productos" className="btn-primary mt-6 inline-flex">
           Ver productos
@@ -102,33 +115,21 @@ export default function Carrito() {
       {/* Lista de productos */}
       <div className="mt-6 divide-y divide-line rounded-card border border-line bg-white shadow-soft">
         {cartList.map(({ product, qty }) => {
-          const paso = product.paso || 1
+          const paso    = product.paso || 1
           const esPorKg = paso === 0.5
           return (
             <div key={product.id} className="flex items-center gap-4 p-4">
-              <img
-                src={product.img}
-                alt={product.name}
-                className="h-16 w-16 rounded-lg object-cover"
-              />
+              <img src={product.img} alt={product.name} className="h-16 w-16 rounded-lg object-cover" />
               <div className="flex-1">
                 <p className="font-display font-semibold text-charcoal">{product.name}</p>
-                <p className="text-xs text-charcoal/50">
-                  {esPorKg ? 'kg' : product.unit}
-                </p>
+                <p className="text-xs text-charcoal/50">{esPorKg ? 'kg' : product.unit}</p>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  className="stepper-btn"
-                  onClick={() => cambiarQty(product, qty, -1)}
-                >−</button>
+                <button className="stepper-btn" onClick={() => cambiarQty(product, qty, -1)}>−</button>
                 <span className="w-10 text-center text-sm font-semibold">
                   {esPorKg ? `${qty} kg` : qty}
                 </span>
-                <button
-                  className="stepper-btn"
-                  onClick={() => cambiarQty(product, qty, 1)}
-                >+</button>
+                <button className="stepper-btn" onClick={() => cambiarQty(product, qty, 1)}>+</button>
               </div>
               <span className="tag-price w-28 text-right text-sm font-bold">
                 ${formatPrice(product.price * qty)}
@@ -138,34 +139,15 @@ export default function Carrito() {
         })}
       </div>
 
-      {/* Resumen de precios */}
-      <div className="mt-4 rounded-card border border-line bg-creamDark p-4">
-        <div className="flex justify-between text-sm text-charcoal/70">
-          <span>Subtotal productos</span>
-          <span>${formatPrice(totalPrice)}</span>
-        </div>
-        <div className="mt-1 flex justify-between text-sm text-charcoal/70">
-          <span>Servicio de abastecimiento</span>
-          <span>${formatPrice(COSTO_SERVICIO)}</span>
-        </div>
-        <div className="mt-3 flex justify-between border-t border-line pt-3">
-          <span className="font-semibold text-charcoal">Total estimado</span>
-          <span className="tag-price text-xl font-bold">${formatPrice(totalEstimado)}</span>
-        </div>
-        <p className="mt-2 text-xs text-charcoal/50">
-          El total informado es estimativo. El valor final se calculara segun el peso real
-          de los productos al momento de preparar el pedido.
-        </p>
-      </div>
-
       {/* Formulario de datos de entrega */}
       <div className="mt-8">
         <h2 className="font-display text-xl font-semibold text-charcoal">Datos de entrega</h2>
         <p className="mt-1 text-sm text-charcoal/60">
-          Completa los datos de quien va a recibir el pedido.
+          Completá los datos de quien va a recibir el pedido.
         </p>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          {/* Nombre */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Nombre completo <span className="text-crate">*</span>
@@ -174,7 +156,7 @@ export default function Carrito() {
               name="nombre"
               value={form.nombre}
               onChange={handleChange}
-              placeholder="Juan Perez"
+              placeholder="Juan Pérez"
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
                 errors.nombre ? 'border-crate bg-crate/5' : 'border-line bg-white'
               }`}
@@ -182,6 +164,7 @@ export default function Carrito() {
             {errors.nombre && <span className="text-xs text-crate">{errors.nombre}</span>}
           </div>
 
+          {/* Celular */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Celular de quien recibe <span className="text-crate">*</span>
@@ -198,15 +181,65 @@ export default function Carrito() {
             {errors.celular && <span className="text-xs text-crate">{errors.celular}</span>}
           </div>
 
+          {/* Zona */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-charcoal">
+              Zona de entrega <span className="text-crate">*</span>
+            </label>
+            <select
+              name="zona"
+              value={form.zona}
+              onChange={handleChange}
+              className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
+                errors.zona ? 'border-crate bg-crate/5' : 'border-line bg-white'
+              }`}
+            >
+              <option value="">Seleccioná tu zona...</option>
+              {ZONAS.map((z) => (
+                <option key={z.id} value={z.id} disabled={!z.disponible}>
+                  {z.label}{z.disponible ? ` — $${formatPrice(z.costo)}` : ''}
+                </option>
+              ))}
+            </select>
+            {errors.zona && <span className="text-xs text-crate">{errors.zona}</span>}
+            {zonaSeleccionada?.disponible && (
+              <span className="text-xs text-charcoal/50">
+                Entregas: martes, jueves y viernes · 12:00–18:00
+              </span>
+            )}
+          </div>
+
+          {/* Medio de pago */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-charcoal">
+              Medio de pago <span className="text-crate">*</span>
+            </label>
+            <select
+              name="medio_pago"
+              value={form.medio_pago}
+              onChange={handleChange}
+              className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
+                errors.medio_pago ? 'border-crate bg-crate/5' : 'border-line bg-white'
+              }`}
+            >
+              <option value="">Seleccioná cómo pagás...</option>
+              {MEDIOS_PAGO.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+            {errors.medio_pago && <span className="text-xs text-crate">{errors.medio_pago}</span>}
+          </div>
+
+          {/* Dirección */}
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label className="text-sm font-medium text-charcoal">
-              Direccion de entrega <span className="text-crate">*</span>
+              Dirección de entrega <span className="text-crate">*</span>
             </label>
             <input
               name="direccion"
               value={form.direccion}
               onChange={handleChange}
-              placeholder="Av. Alem 500, Barrio Norte"
+              placeholder="Av. Alem 500, piso 3"
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
                 errors.direccion ? 'border-crate bg-crate/5' : 'border-line bg-white'
               }`}
@@ -214,6 +247,7 @@ export default function Carrito() {
             {errors.direccion && <span className="text-xs text-crate">{errors.direccion}</span>}
           </div>
 
+          {/* Nota */}
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label className="text-sm font-medium text-charcoal">
               Nota para el repartidor{' '}
@@ -223,12 +257,44 @@ export default function Carrito() {
               name="nota"
               value={form.nota}
               onChange={handleChange}
-              placeholder="Ej: dejar en porteria, tocar timbre 2B, etc."
+              placeholder="Ej: dejar en portería, tocar timbre 2B, etc."
               rows={3}
               className="resize-none rounded-xl border border-line bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf"
             />
           </div>
         </div>
+      </div>
+
+      {/* Resumen de precios */}
+      <div className="mt-6 rounded-card border border-line bg-creamDark p-4">
+        <div className="flex justify-between text-sm text-charcoal/70">
+          <span>Subtotal productos</span>
+          <span>${formatPrice(totalPrice)}</span>
+        </div>
+        <div className="mt-1 flex justify-between text-sm text-charcoal/70">
+          <span>
+            Servicio de abastecimiento
+            {zonaSeleccionada && ` · ${zonaSeleccionada.label}`}
+          </span>
+          <span>
+            {costoServicio !== null ? `$${formatPrice(costoServicio)}` : '—'}
+          </span>
+        </div>
+        <div className="mt-3 flex justify-between border-t border-line pt-3">
+          <span className="font-semibold text-charcoal">Total estimado</span>
+          <span className="tag-price text-xl font-bold">
+            {totalEstimado !== null ? `$${formatPrice(totalEstimado)}` : '—'}
+          </span>
+        </div>
+        {!zonaSeleccionada && (
+          <p className="mt-2 text-xs text-mustard font-medium">
+            Seleccioná tu zona para ver el total con el costo de envío.
+          </p>
+        )}
+        <p className="mt-2 text-xs text-charcoal/50">
+          El total informado es estimativo. El valor final se calculará según el peso real
+          de los productos al momento de preparar el pedido.
+        </p>
       </div>
 
       {/* Botón WhatsApp */}

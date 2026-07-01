@@ -1,6 +1,3 @@
-// Datos estáticos — Los productos vienen de Supabase via useProducts()
-// Este archivo solo mantiene packs, zonas de entrega y datos que no se sincronizan del ERP
-
 export const packs = [
   {
     id: 'pack-semanal',
@@ -41,10 +38,7 @@ export const packs = [
 ]
 
 export const deliveryZones = [
-  { zone: 'Centro y Microcentro', day: 'Martes', time: '08:00–12:00' },
-  { zone: 'Barrio Sur', day: 'Martes', time: '17:00–20:00' },
-  { zone: 'Yerba Buena', day: 'Miércoles', time: '08:00–12:00' },
-  { zone: 'Villa Mariano Moreno', day: 'Miércoles', time: '17:00–20:00' },
-  { zone: 'Barrio Norte', day: 'Jueves', time: '08:00–12:00' },
-  { zone: 'San Cayetano', day: 'Jueves', time: '17:00–20:00' },
+  { zone: 'San Miguel de Tucumán', days: 'Martes, jueves y viernes', time: '12:00–18:00', costo: 3500, disponible: true },
+  { zone: 'Alderetes',             days: 'Martes, jueves y viernes', time: '12:00–18:00', costo: 2000, disponible: true },
+  { zone: 'Yerba Buena',           days: 'Próximamente',             time: '',            costo: null,  disponible: false },
 ]

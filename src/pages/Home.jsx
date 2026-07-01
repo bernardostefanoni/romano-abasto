@@ -6,10 +6,14 @@ import PackCard from '../components/PackCard.jsx'
 import { packs, deliveryZones } from '../data/catalog.js'
 import { useProducts } from '../hooks/useProducts.js'
 
+function formatPrice(n) {
+  return Number(n).toLocaleString('es-AR')
+}
+
 export default function Home() {
   const { products, loading } = useProducts()
   const destacados = products.filter((p) => p.featured)
-  const primeros = products.slice(0, 8)
+  const primeros   = products.slice(0, 8)
 
   return (
     <>
@@ -21,19 +25,9 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <ProductCarousel
-            title="Lo más pedido"
-            icon="🔥"
-            products={primeros}
-            viewAllTo="/productos"
-          />
+          <ProductCarousel title="Lo más pedido" icon="🔥" products={primeros} viewAllTo="/productos" />
           {destacados.length > 0 && (
-            <ProductCarousel
-              title="Productos destacados"
-              icon="⭐"
-              products={destacados}
-              viewAllTo="/productos"
-            />
+            <ProductCarousel title="Productos destacados" icon="⭐" products={destacados} viewAllTo="/productos" />
           )}
         </>
       )}
@@ -50,9 +44,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {packs.map((p) => (
-              <PackCard key={p.id} pack={p} />
-            ))}
+            {packs.map((p) => <PackCard key={p.id} pack={p} />)}
           </div>
         </div>
       </section>
@@ -90,22 +82,32 @@ export default function Home() {
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="section-title">¿Llegamos hasta tu casa?</h2>
           <p className="mt-2 text-sm text-charcoal/70">
-            Repartimos en motocarro por zonas, dos veces por semana.
+            Repartimos en motocarro los martes, jueves y viernes de 12:00 a 18:00.
           </p>
           <div className="mt-8 divide-y divide-line overflow-hidden rounded-card border border-line bg-white text-left shadow-soft">
             {deliveryZones.map((z) => (
-              <div key={z.zone} className="flex items-center justify-between gap-3 px-5 py-3.5">
-                <span className="flex items-center gap-2 text-sm font-medium text-charcoal">
-                  <span aria-hidden>📍</span> {z.zone}
-                </span>
-                <span className="text-sm text-charcoal/60">
-                  {z.day} · <span className="font-semibold text-leaf">{z.time}</span>
-                </span>
+              <div key={z.zone} className="flex items-center justify-between gap-3 px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <span aria-hidden className={z.disponible ? 'text-leaf' : 'text-charcoal/30'}>📍</span>
+                  <div>
+                    <p className={`text-sm font-medium ${z.disponible ? 'text-charcoal' : 'text-charcoal/40'}`}>
+                      {z.zone}
+                    </p>
+                    {!z.disponible && (
+                      <p className="text-xs text-charcoal/40">Próximamente</p>
+                    )}
+                  </div>
+                </div>
+                {z.disponible ? (
+                  <span className="text-sm font-semibold text-leaf">${formatPrice(z.costo)}</span>
+                ) : (
+                  <span className="rounded-full bg-creamDark px-3 py-1 text-xs text-charcoal/40">Próximamente</span>
+                )}
               </div>
             ))}
           </div>
           <Link to="/zonas" className="btn-primary mt-8 inline-flex">
-            Comprobá tu zona
+            Ver detalles de entrega
           </Link>
         </div>
       </section>
