@@ -86,10 +86,7 @@ export default function PackDetail() {
             <Link to="/packs" className="btn-secondary">Ver otros packs</Link>
           </div>
 
-          <div className="mt-8 space-y-1.5 rounded-card border border-line bg-creamDark/60 p-4 text-xs text-charcoal/60">
-            <p>📦 Las cantidades pueden variar levemente según disponibilidad del Mercofrut.</p>
-            <p>🛒 Podés modificar cantidades o quitar productos del pack al agregarlo al carrito.</p>
-          </div>
+
         </div>
       </div>
     </div>
