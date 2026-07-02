@@ -135,6 +135,7 @@ export default function Carrito() {
 
     const partes = [
       'NUEVO PEDIDO - Romano Abasto',
+      entregaTexto,
       '',
       ...lineas,
       '',
@@ -149,7 +150,6 @@ export default function Carrito() {
       `Zona: ${zonaSeleccionada.label}`,
       `Celular: ${form.celular}`,
       `Medio de pago: ${form.medio_pago}`,
-      entregaTexto,
     ]
 
     if (form.nota.trim()) partes.push('', `Nota: ${form.nota}`)
