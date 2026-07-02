@@ -15,6 +15,17 @@ export default function SobreNosotros() {
         También trabajamos con locales gastronómicos que necesitan abastecimiento recurrente, con
         precios mayoristas y entregas programadas.
       </p>
+
+      <div className="mt-8 rounded-card border border-leaf/20 bg-leaf/5 p-5">
+        <h2 className="font-display text-lg font-semibold text-leaf flex items-center gap-2">
+          <span>🛡️</span> Garantía de frescura
+        </h2>
+        <p className="mt-2 text-sm text-charcoal/75">
+          Si recibís un producto en mal estado o que no cumple con la calidad esperada, te lo
+          reemplazamos en la próxima entrega o te descontamos del siguiente pedido. Solo mandanos
+          una foto por WhatsApp y lo resolvemos.
+        </p>
+      </div>
     </div>
   )
 }

@@ -154,6 +154,8 @@ export default function Carrito() {
 
     if (form.nota.trim()) partes.push('', `Nota: ${form.nota}`)
 
+    partes.push('', 'Si algo no llego en condiciones, mandanos foto por este mismo WhatsApp y lo resolvemos en el proximo pedido.')
+
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`
     window.open(url, '_blank')
 
