@@ -7,9 +7,9 @@ export default function SobreNosotros() {
       <h1 className="font-display text-3xl font-bold text-charcoal">Cómo trabajamos</h1>
       <RouteMark className="my-6 h-10 w-full max-w-sm" />
       <p className="text-charcoal/75">
-        Cada mañana recorremos el mercado mayorista para elegir fruta y verdura fresca, huevos,
-        productos de limpieza y panadería del día. Armamos los pedidos y los repartimos en motocarro
-        por zonas fijas, dos veces por semana.
+        Juntamos los pedidos hasta las 20hs del día anterior a la entrega, compramos en el Mercofrut
+        y llevamos fruta, verdura fresca, huevos, productos de limpieza y panadería directo a tu
+        puerta en motocarro.
       </p>
       <p className="mt-4 text-charcoal/75">
         También trabajamos con locales gastronómicos que necesitan abastecimiento recurrente, con
