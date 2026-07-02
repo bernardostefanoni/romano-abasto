@@ -128,33 +128,33 @@ export default function Carrito() {
 
     const lineas = cartList.map(
       ({ product, qty }) =>
-        `\ud83d\udce6 ${product.name} x${qty} --- $${formatPrice(product.price * qty)}`
+        `> ${product.name} x${qty} --- $${formatPrice(product.price * qty)}`
     )
 
     const entregaTexto = entrega
-      ? `\ud83d\udcc5 Proxima entrega: ${entrega.nombre} ${entrega.fecha}, 12:00-18:00`
-      : '\ud83d\udcc5 Entrega a coordinar'
+      ? `Proxima entrega: ${entrega.nombre} ${entrega.fecha}, 12:00-18:00`
+      : 'Entrega a coordinar'
 
     const partes = [
-      '\ud83d\uded2 NUEVO PEDIDO - Romano Abasto',
+      'NUEVO PEDIDO - Romano Abasto',
       SEP,
       ...lineas,
       SEP,
-      `\ud83d\ude9a Servicio (${zonaSeleccionada.label}): $${formatPrice(costoServicio)}`,
-      `\ud83d\udcb0 TOTAL ESTIMADO: $${formatPrice(totalEstimado)}`,
+      `Servicio (${zonaSeleccionada.label}): $${formatPrice(costoServicio)}`,
+      `*TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
       '',
-      '\u26a0\ufe0f El total es estimativo. El valor final se calculara segun el peso real de los productos.',
+      'El total es estimativo. El valor final se calculara segun el peso real de los productos.',
       '',
-      '\ud83d\udce6 DATOS DE ENTREGA',
-      `\ud83d\udc64 Nombre: ${form.nombre}`,
-      `\ud83d\udccd Direccion: ${form.direccion}`,
-      `\ud83d\uddfa\ufe0f Zona: ${zonaSeleccionada.label}`,
-      `\ud83d\udcf1 Celular: ${form.celular}`,
-      `\ud83d\udcb3 Medio de pago: ${form.medio_pago}`,
+      'DATOS DE ENTREGA',
+      `Nombre: ${form.nombre}`,
+      `Direccion: ${form.direccion}`,
+      `Zona: ${zonaSeleccionada.label}`,
+      `Celular: ${form.celular}`,
+      `Medio de pago: ${form.medio_pago}`,
       entregaTexto,
     ]
 
-    if (form.nota.trim()) partes.push(`\ud83d\udcdd Nota: ${form.nota}`)
+    if (form.nota.trim()) partes.push(`Nota: ${form.nota}`)
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`
     window.open(url, '_blank')
