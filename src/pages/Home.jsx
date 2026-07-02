@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import Hero from '../components/Hero.jsx'
 import ProductCarousel from '../components/ProductCarousel.jsx'
 import PackCard from '../components/PackCard.jsx'
-import { packs, deliveryZones } from '../data/catalog.js'
+import { deliveryZones } from '../data/catalog.js'
+import { usePacks } from '../hooks/usePacks.js'
 import { useProducts } from '../hooks/useProducts.js'
 
 function formatPrice(n) {
@@ -11,7 +12,8 @@ function formatPrice(n) {
 }
 
 export default function Home() {
-  const { products, loading } = useProducts()
+  const { products, loading }         = useProducts()
+  const { packs, loading: loadingPacks } = usePacks()
   const destacados = products.filter((p) => p.featured)
   const masPedidos = products.filter((p) => p.masPedido)
 
@@ -35,21 +37,23 @@ export default function Home() {
       )}
 
       {/* Packs */}
-      <section className="bg-creamDark py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="section-title flex items-center gap-2">
-              <span aria-hidden>📦</span> Nuestras selecciones
-            </h2>
-            <Link to="/packs" className="btn-secondary !py-2 text-xs sm:text-sm">
-              Ver todos los packs →
-            </Link>
+      {!loadingPacks && packs.length > 0 && (
+        <section className="bg-creamDark py-12">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-6 flex items-end justify-between">
+              <h2 className="section-title flex items-center gap-2">
+                <span aria-hidden>📦</span> Nuestras selecciones
+              </h2>
+              <Link to="/packs" className="btn-secondary !py-2 text-xs sm:text-sm">
+                Ver todos los packs →
+              </Link>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {packs.slice(0, 4).map((p) => <PackCard key={p.id} pack={p} />)}
+            </div>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {packs.map((p) => <PackCard key={p.id} pack={p} />)}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Banner gastronómico */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">

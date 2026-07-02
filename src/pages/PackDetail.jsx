@@ -1,14 +1,23 @@
 import React from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { packs } from '../data/catalog.js'
+import { usePacks } from '../hooks/usePacks.js'
 
 function formatPrice(n) {
-  return n.toLocaleString('es-AR')
+  return Number(n).toLocaleString('es-AR')
 }
 
 export default function PackDetail() {
   const { packId } = useParams()
-  const pack = packs.find((p) => p.id === packId)
+  const { packs, loading } = usePacks()
+  const pack = packs.find((p) => String(p.id) === String(packId))
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 text-sm text-charcoal/50">
+        Cargando pack...
+      </div>
+    )
+  }
 
   if (!pack) {
     return (
@@ -37,15 +46,24 @@ export default function PackDetail() {
         <div>
           <h1 className="font-display text-3xl font-bold text-charcoal">{pack.name}</h1>
           <p className="tag-price mt-2 text-3xl font-bold">${formatPrice(pack.price)}</p>
-          <p className="mt-4 text-charcoal/75">{pack.desc}</p>
+          {pack.desc && <p className="mt-4 text-charcoal/75">{pack.desc}</p>}
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            {pack.bullets.map((b) => (
-              <span key={b} className="rounded-full bg-sage/25 px-3 py-1.5 text-sm font-medium text-leaf">
-                {b}
-              </span>
-            ))}
-          </div>
+          {pack.components.length > 0 && (
+            <div className="mt-6">
+              <h2 className="font-display text-lg font-semibold text-charcoal mb-3">
+                ¿Qué incluye?
+              </h2>
+              <ul className="space-y-2">
+                {pack.components.map((c, i) => (
+                  <li key={i} className="flex items-center gap-2 rounded-lg bg-creamDark px-3 py-2 text-sm">
+                    <span className="font-tag text-leaf font-bold">{c.cantidad}</span>
+                    <span className="text-xs text-charcoal/50">{c.unidad}</span>
+                    <span className="text-charcoal">{c.sku}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div className="mt-8 flex flex-wrap gap-3">
             <button className="btn-primary">Agregar al carrito</button>
@@ -53,8 +71,8 @@ export default function PackDetail() {
           </div>
 
           <div className="mt-8 space-y-1.5 rounded-card border border-line bg-creamDark/60 p-4 text-xs text-charcoal/60">
-            <p>📦 Incluye {pack.items} productos. Las cantidades pueden variar según disponibilidad del Mercofrut.</p>
-            <p>🛒 Una vez agregado, podés modificar cantidades o quitar productos del pack de forma individual.</p>
+            <p>📦 Las cantidades pueden variar levemente según disponibilidad del Mercofrut.</p>
+            <p>🛒 Podés modificar cantidades o quitar productos del pack al agregarlo al carrito.</p>
           </div>
         </div>
       </div>
