@@ -39,9 +39,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <p className="mt-10 border-t border-line pt-6 text-xs text-charcoal/50">
-          Sitio de demostración — diseño inspirado, contenido y marca ficticios.
-        </p>
+
       </div>
     </footer>
   )
