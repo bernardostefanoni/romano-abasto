@@ -19,7 +19,13 @@ export default function Zonas() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <div className="text-center">
+      <div className="rounded-card border border-leaf/20 bg-leaf/5 px-5 py-4 text-center">
+        <p className="text-sm text-leaf font-medium">
+          🌱 A medida que crezca la demanda, vamos a sumar más días, horarios y zonas de entrega.
+        </p>
+      </div>
+
+      <div className="text-center mt-8">
         <span aria-hidden className="text-3xl">🛵</span>
         <h1 className="mt-3 font-display text-3xl font-bold text-charcoal">
           ¿Llegamos a tu domicilio?
@@ -83,11 +89,6 @@ export default function Zonas() {
         El costo indicado corresponde al servicio de abastecimiento programado por entrega.
       </p>
 
-      <div className="mt-6 rounded-card border border-leaf/20 bg-leaf/5 px-5 py-4 text-center">
-        <p className="text-sm text-leaf font-medium">
-          🌱 A medida que crezca la demanda, vamos a sumar más días, horarios y zonas de entrega.
-        </p>
-      </div>
     </div>
   )
 }
