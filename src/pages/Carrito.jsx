@@ -124,8 +124,6 @@ export default function Carrito() {
     const errs = validar()
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
 
-    const SEP = '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501'
-
     const lineas = cartList.map(
       ({ product, qty }) =>
         `> ${product.name} x${qty} --- $${formatPrice(product.price * qty)}`
@@ -137,9 +135,9 @@ export default function Carrito() {
 
     const partes = [
       'NUEVO PEDIDO - Romano Abasto',
-      SEP,
+      '',
       ...lineas,
-      SEP,
+      '',
       `Servicio (${zonaSeleccionada.label}): $${formatPrice(costoServicio)}`,
       `*TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
       '',
@@ -154,7 +152,7 @@ export default function Carrito() {
       entregaTexto,
     ]
 
-    if (form.nota.trim()) partes.push(`Nota: ${form.nota}`)
+    if (form.nota.trim()) partes.push('', `Nota: ${form.nota}`)
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`
     window.open(url, '_blank')
