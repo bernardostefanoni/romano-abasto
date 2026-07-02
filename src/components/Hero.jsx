@@ -103,6 +103,39 @@ export default function Hero() {
             frutas, verduras, huevos, productos de limpieza y panadería.
           </p>
           <RouteMark className="mt-6 h-10 w-full max-w-sm" />
+
+          {/* Card de entrega — solo mobile */}
+          {estado && countdown && (
+            <div className="mt-5 rounded-card bg-cream px-4 py-3 shadow-soft md:hidden">
+              {countdown ? (
+                <>
+                  <p className="font-tag text-xs text-crate font-semibold uppercase tracking-wide">
+                    Pedidos abiertos
+                  </p>
+                  <p className="mt-0.5 font-display text-sm font-semibold text-charcoal">
+                    Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
+                  </p>
+                  <p className="font-tag text-xs text-charcoal/50 mb-2">
+                    Cierre de pedidos a las {HORA_CORTE}:00 hs
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <CountdownBox value={countdown.horas}    label="hs" />
+                    <span className="font-bold text-crate text-xl">:</span>
+                    <CountdownBox value={countdown.minutos}  label="min" />
+                    <span className="font-bold text-crate text-xl">:</span>
+                    <CountdownBox value={countdown.segundos} label="seg" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="font-tag text-xs text-charcoal/50 uppercase tracking-wide">Pedidos cerrados</p>
+                  <p className="font-display text-sm font-semibold text-leaf">Próxima entrega disponible</p>
+                  <p className="font-tag text-xs text-charcoal/60">Martes, Jueves y Viernes · 12:00–18:00</p>
+                </>
+              )}
+            </div>
+          )}
+
           <div className="mt-7 flex flex-wrap gap-3">
             <Link to="/productos" className="btn-primary">Ver productos</Link>
             <Link to="/zonas" className="rounded-full border-2 border-cream px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-cream hover:text-leaf">
