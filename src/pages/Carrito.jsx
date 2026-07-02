@@ -126,10 +126,10 @@ export default function Carrito() {
 
     const lineas = cartList.map(
       ({ product, qty }) => {
-        const paso    = product.paso || 1
-        const esPorKg = paso === 0.5
+        const paso    = Number(product.paso) || 1
+        const esPorKg = paso <= 0.5
         const qtyStr  = esPorKg ? `${qty} kg` : `x${qty}`
-        return `> ${product.name} ${qtyStr} --- $${formatPrice(product.price * qty)}`
+        return `> ${product.name} ${qtyStr} — $${formatPrice(product.price * qty)}`
       }
     )
 
@@ -138,27 +138,27 @@ export default function Carrito() {
       : 'Entrega a coordinar'
 
     const partes = [
-      'NUEVO PEDIDO - Romano Abasto',
+      '🛒 NUEVO PEDIDO - Romano Abasto',
       entregaTexto,
       '',
       ...lineas,
       '',
-      `Servicio (${zonaSeleccionada.label}): $${formatPrice(costoServicio)}`,
-      `*TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
+      `🚚 Servicio (${zonaSeleccionada.label}): $${formatPrice(costoServicio)}`,
+      `💰 *TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
       '',
-      'El total es estimativo. El valor final se calculara segun el peso real de los productos.',
+      '⚠️ El total es estimativo. El valor final se calculara segun el peso real de los productos.',
       '',
-      'DATOS DE ENTREGA',
-      `Nombre: ${form.nombre}`,
-      `Direccion: ${form.direccion}`,
-      `Zona: ${zonaSeleccionada.label}`,
-      `Celular: ${form.celular}`,
-      `Medio de pago: ${form.medio_pago}`,
+      '📋 DATOS DE ENTREGA',
+      `👤 Nombre: ${form.nombre}`,
+      `📍 Direccion: ${form.direccion}`,
+      `🗺️ Zona: ${zonaSeleccionada.label}`,
+      `📱 Celular: ${form.celular}`,
+      `💳 Medio de pago: ${form.medio_pago}`,
     ]
 
-    if (form.nota.trim()) partes.push('', `Nota: ${form.nota}`)
+    if (form.nota.trim()) partes.push('', `📝 Nota: ${form.nota}`)
 
-    partes.push('', 'Si algo no llego en condiciones, mandanos foto por este mismo WhatsApp y lo resolvemos en el proximo pedido.')
+    partes.push('', '🛡️ Si algo no llego en condiciones, mandanos foto por este mismo WhatsApp y lo resolvemos en el proximo pedido.')
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`
     window.open(url, '_blank')
