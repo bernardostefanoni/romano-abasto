@@ -13,7 +13,7 @@ function formatPrice(n) {
 export default function Home() {
   const { products, loading } = useProducts()
   const destacados = products.filter((p) => p.featured)
-  const primeros   = products.slice(0, 8)
+  const masPedidos = products.filter((p) => p.masPedido)
 
   return (
     <>
@@ -25,7 +25,9 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <ProductCarousel title="Lo más pedido" icon="🔥" products={primeros} viewAllTo="/productos" />
+          {masPedidos.length > 0 && (
+            <ProductCarousel title="Lo más pedido" icon="🔥" products={masPedidos} viewAllTo="/productos" />
+          )}
           {destacados.length > 0 && (
             <ProductCarousel title="Productos destacados" icon="⭐" products={destacados} viewAllTo="/productos" />
           )}

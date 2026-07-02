@@ -38,6 +38,7 @@ export function useProducts() {
           precio_por:    p.unidad_display || p.unidad,
           price:         Number(p.precio),
           featured:      p.destacado,
+          masPedido:     p.mas_pedido,
           paso:          Number(p.paso) || 1,
           img:           p.imagen_url || defaultImage(p.categoria),
         }))
