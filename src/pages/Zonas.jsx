@@ -82,6 +82,12 @@ export default function Zonas() {
       <p className="mt-4 text-xs text-charcoal/50 text-center">
         El costo indicado corresponde al servicio de abastecimiento programado por entrega.
       </p>
+
+      <div className="mt-6 rounded-card border border-leaf/20 bg-leaf/5 px-5 py-4 text-center">
+        <p className="text-sm text-leaf font-medium">
+          🌱 A medida que crezca la demanda, vamos a sumar más días, horarios y zonas de entrega.
+        </p>
+      </div>
     </div>
   )
 }
