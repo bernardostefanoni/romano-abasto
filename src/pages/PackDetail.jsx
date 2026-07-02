@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { usePacks } from '../hooks/usePacks.js'
+import { useCart } from '../context/CartContext.jsx'
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR')
@@ -9,7 +10,15 @@ function formatPrice(n) {
 export default function PackDetail() {
   const { packId } = useParams()
   const { packs, loading } = usePacks()
+  const { addPackToCart } = useCart()
+  const [agregado, setAgregado] = useState(false)
   const pack = packs.find((p) => String(p.id) === String(packId))
+
+  function handleAgregar() {
+    addPackToCart(pack, 1)
+    setAgregado(true)
+    setTimeout(() => setAgregado(false), 2000)
+  }
 
   if (loading) {
     return (
@@ -66,7 +75,14 @@ export default function PackDetail() {
           )}
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <button className="btn-primary">Agregar al carrito</button>
+            <button
+              onClick={handleAgregar}
+              className={`rounded-full px-6 py-3 text-sm font-semibold text-cream transition-all ${
+                agregado ? 'bg-mustard' : 'bg-crate hover:bg-crateDark'
+              }`}
+            >
+              {agregado ? '✓ Agregado al carrito' : 'Agregar al carrito'}
+            </button>
             <Link to="/packs" className="btn-secondary">Ver otros packs</Link>
           </div>
 

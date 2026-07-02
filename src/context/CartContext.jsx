@@ -27,6 +27,26 @@ export function CartProvider({ children }) {
     })
   }
 
+  function addPackToCart(pack, qty = 1) {
+    // Los packs se identifican con "pack-{id}" para no chocar con productos
+    const packId = `pack-${pack.id}`
+    setItems((prev) => {
+      const current = prev[packId]
+      const newQty = (current?.qty || 0) + qty
+      const packAsProduct = {
+        id:            packId,
+        name:          pack.name,
+        price:         pack.price,
+        img:           pack.img,
+        unit:          `${pack.components?.length || 0} productos`,
+        paso:          1,
+        isPack:        true,
+        components:    pack.components || [],
+      }
+      return { ...prev, [packId]: { product: packAsProduct, qty: newQty } }
+    })
+  }
+
   function clearCart() {
     setItems({})
   }
@@ -39,7 +59,7 @@ export function CartProvider({ children }) {
   )
 
   return (
-    <CartContext.Provider value={{ items, cartList, addToCart, setQty, clearCart, totalItems, totalPrice }}>
+    <CartContext.Provider value={{ items, cartList, addToCart, setQty, addPackToCart, clearCart, totalItems, totalPrice }}>
       {children}
     </CartContext.Provider>
   )

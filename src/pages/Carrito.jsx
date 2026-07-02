@@ -124,14 +124,21 @@ export default function Carrito() {
     const errs = validar()
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
 
-    const lineas = cartList.map(
-      ({ product, qty }) => {
-        const paso    = Number(product.paso) || 1
-        const esPorKg = paso <= 0.5
-        const qtyStr  = esPorKg ? `${qty} kg` : `x${qty}`
-        return `> ${product.name} ${qtyStr} — $${formatPrice(product.price * qty)}`
+    const lineas = []
+    cartList.forEach(({ product, qty }) => {
+      const paso    = Number(product.paso) || 1
+      const esPorKg = paso <= 0.5
+      const qtyStr  = esPorKg ? `${qty} kg` : `x${qty}`
+
+      lineas.push(`> ${product.name} ${qtyStr} — $${formatPrice(product.price * qty)}`)
+
+      // Si es un pack, agregar el desglose de componentes
+      if (product.isPack && Array.isArray(product.components) && product.components.length > 0) {
+        product.components.forEach((c) => {
+          lineas.push(`>    · ${c.cantidad} ${c.unidad} ${c.sku}`)
+        })
       }
-    )
+    })
 
     const entregaTexto = entrega
       ? `Proxima entrega: ${entrega.nombre} ${entrega.fecha}, 12:00-18:00`

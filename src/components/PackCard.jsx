@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useCart } from '../context/CartContext.jsx'
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR')
@@ -7,7 +8,15 @@ function formatPrice(n) {
 
 export default function PackCard({ pack }) {
   const [expanded, setExpanded] = useState(false)
+  const [agregado, setAgregado] = useState(false)
+  const { addPackToCart } = useCart()
   const components = pack.components || []
+
+  function handleAgregar() {
+    addPackToCart(pack, 1)
+    setAgregado(true)
+    setTimeout(() => setAgregado(false), 1500)
+  }
 
   return (
     <div className="crate-card flex flex-col overflow-hidden">
@@ -69,7 +78,15 @@ export default function PackCard({ pack }) {
         )}
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
-          <Link to={`/packs/${pack.id}`} className="btn-primary w-full">
+          <button
+            onClick={handleAgregar}
+            className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold text-cream transition-all ${
+              agregado ? 'bg-mustard' : 'bg-leaf hover:bg-leafLight'
+            }`}
+          >
+            {agregado ? '✓ Agregado al carrito' : 'Agregar al carrito'}
+          </button>
+          <Link to={`/packs/${pack.id}`} className="btn-secondary w-full">
             Ver detalle
           </Link>
         </div>
