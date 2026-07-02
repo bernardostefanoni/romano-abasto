@@ -21,7 +21,8 @@ export default function Productos() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <nav className="mb-4 text-xs text-charcoal/50">
-        Inicio <span className="mx-1">›</span>
+        <Link to="/" className="hover:text-crate transition-colors">Inicio</Link>
+        <span className="mx-1">›</span>
         <span className="font-medium text-charcoal">Productos</span>
       </nav>
 
