@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 
+const LOGO_URL = 'https://qjjmgjbgzsnppvxwghhv.supabase.co/storage/v1/object/public/productos/logo-icono.jpeg'
+
 const navLinks = [
-  { to: '/productos', label: 'Productos' },
-  { to: '/packs', label: 'Packs' },
-  { to: '/zonas', label: 'Zonas de entrega' },
+  { to: '/productos',      label: 'Productos' },
+  { to: '/packs',          label: 'Packs' },
+  { to: '/zonas',          label: 'Zonas de entrega' },
   { to: '/sobre-nosotros', label: 'Nosotros' },
 ]
 
@@ -16,15 +18,20 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-cream/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-leaf font-display text-lg font-bold text-cream">
-            R
-          </span>
+
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
+          <img
+            src={LOGO_URL}
+            alt="Romano Abasto"
+            className="h-10 w-10 rounded-lg object-cover"
+          />
           <span className="font-display text-lg font-semibold leading-tight text-charcoal">
             Romano <span className="text-crate">Abasto</span>
           </span>
         </Link>
 
+        {/* Nav desktop */}
         <nav className="hidden items-center gap-7 md:flex">
           {navLinks.map((l) => (
             <NavLink
@@ -41,6 +48,7 @@ export default function Header() {
           ))}
         </nav>
 
+        {/* Carrito + CTA + hamburguesa */}
         <div className="flex items-center gap-3">
           <Link to="/carrito" className="relative flex items-center gap-1.5 text-sm font-semibold text-leaf">
             <span aria-hidden>🧺</span>
@@ -64,6 +72,7 @@ export default function Header() {
         </div>
       </div>
 
+      {/* Menú mobile */}
       {open && (
         <div className="border-t border-line bg-cream px-4 pb-4 md:hidden">
           <nav className="flex flex-col gap-3 pt-3">
