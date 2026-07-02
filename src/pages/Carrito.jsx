@@ -274,13 +274,13 @@ export default function Carrito() {
             </select>
             {errors.zona && <span className="text-xs text-crate">{errors.zona}</span>}
             {entrega && (
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs text-leaf font-medium">
-                  Próxima entrega: {entrega.nombre} {entrega.fecha} · 12:00–18:00
-                </span>
-                <span className="text-xs text-charcoal/50">
-                  Los pedidos se toman hasta las 20:00 hs del día anterior a la entrega.
-                </span>
+              <div className="rounded-lg border border-crate/30 bg-crate/5 px-4 py-3 flex flex-col gap-1">
+                <p className="text-sm font-bold text-crate">
+                  📅 Próxima entrega: {entrega.nombre} {entrega.fecha} · 12:00–18:00
+                </p>
+                <p className="text-xs text-charcoal/70">
+                  ⏰ Los pedidos se toman hasta las 20:00 hs del día anterior.
+                </p>
               </div>
             )}
           </div>
