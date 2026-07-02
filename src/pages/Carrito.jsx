@@ -125,8 +125,12 @@ export default function Carrito() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
 
     const lineas = cartList.map(
-      ({ product, qty }) =>
-        `> ${product.name} x${qty} --- $${formatPrice(product.price * qty)}`
+      ({ product, qty }) => {
+        const paso    = product.paso || 1
+        const esPorKg = paso === 0.5
+        const qtyStr  = esPorKg ? `${qty} kg` : `x${qty}`
+        return `> ${product.name} ${qtyStr} --- $${formatPrice(product.price * qty)}`
+      }
     )
 
     const entregaTexto = entrega
