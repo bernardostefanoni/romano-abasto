@@ -220,9 +220,22 @@ export default function Carrito() {
                 </span>
                 <button className="stepper-btn" onClick={() => cambiarQty(product, qty, 1)}>+</button>
               </div>
-              <span className="tag-price w-28 text-right text-sm font-bold">
+              <span className="tag-price w-24 text-right text-sm font-bold">
                 ${formatPrice(product.price * qty)}
               </span>
+              <button
+                onClick={() => setQty(product, 0)}
+                className="ml-1 flex h-8 w-8 items-center justify-center rounded-full text-charcoal/30 transition-colors hover:bg-crate/10 hover:text-crate"
+                aria-label="Eliminar producto"
+                title="Eliminar del carrito"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                </svg>
+              </button>
             </div>
           )
         })}
