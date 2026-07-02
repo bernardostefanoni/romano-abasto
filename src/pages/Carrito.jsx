@@ -255,9 +255,14 @@ export default function Carrito() {
             </select>
             {errors.zona && <span className="text-xs text-crate">{errors.zona}</span>}
             {entrega && (
-              <span className="text-xs text-leaf font-medium">
-                Próxima entrega: {entrega.nombre} {entrega.fecha} · 12:00–18:00
-              </span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-leaf font-medium">
+                  Próxima entrega: {entrega.nombre} {entrega.fecha} · 12:00–18:00
+                </span>
+                <span className="text-xs text-charcoal/50">
+                  Los pedidos se toman hasta las 20:00 hs del día anterior a la entrega.
+                </span>
+              </div>
             )}
           </div>
 
