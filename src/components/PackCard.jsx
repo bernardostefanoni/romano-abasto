@@ -58,7 +58,7 @@ export default function PackCard({ pack }) {
                     </div>
                     {c.precio_unit > 0 && (
                       <span className="tag-price text-xs whitespace-nowrap">
-                        ${formatPrice(c.precio_unit * c.cantidad)}
+                        ${formatPrice(Math.round(c.precio_unit * c.cantidad))}
                       </span>
                     )}
                   </li>
