@@ -64,10 +64,17 @@ export default function PackDetail() {
               </h2>
               <ul className="space-y-2">
                 {pack.components.map((c, i) => (
-                  <li key={i} className="flex items-center gap-2 rounded-lg bg-creamDark px-3 py-2 text-sm">
-                    <span className="font-tag text-leaf font-bold">{c.cantidad}</span>
-                    <span className="text-xs text-charcoal/50">{c.unidad}</span>
-                    <span className="text-charcoal">{c.sku}</span>
+                  <li key={i} className="flex items-center justify-between gap-2 rounded-lg bg-creamDark px-3 py-2 text-sm">
+                    <div className="flex items-baseline gap-2 min-w-0">
+                      <span className="font-tag text-leaf font-bold shrink-0">{c.cantidad}</span>
+                      <span className="text-xs text-charcoal/50 shrink-0">{c.unidad}</span>
+                      <span className="text-charcoal truncate">{c.sku}</span>
+                    </div>
+                    {c.precio_unit > 0 && (
+                      <span className="tag-price text-sm font-semibold whitespace-nowrap">
+                        ${formatPrice(Math.round(c.precio_unit * c.cantidad))}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
