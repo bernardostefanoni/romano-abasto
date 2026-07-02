@@ -2,47 +2,48 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import RouteMark from './RouteMark.jsx'
 
-// Días de entrega: 2=Martes, 4=Jueves, 5=Viernes
-const DIAS_ENTREGA = [2, 4, 5]
+const DIAS_ENTREGA = [2, 4, 5] // Martes, Jueves, Viernes
 const NOMBRES_DIA  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']
 const NOMBRES_MES  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
-const HORA_CORTE   = 20 // 20:00 hs
+const HORA_CORTE   = 20 // Pedidos hasta las 20hs del día anterior
 
-function calcularProximaEntrega() {
+function calcularEstado() {
   const ahora   = new Date()
   const hoy     = ahora.getDay()
   const horaAct = ahora.getHours() + ahora.getMinutes() / 60
 
   for (let offset = 0; offset <= 7; offset++) {
-    const diaCandiato = (hoy + offset) % 7
+    const diaEntrega = (hoy + offset) % 7
+    if (!DIAS_ENTREGA.includes(diaEntrega)) continue
 
-    if (!DIAS_ENTREGA.includes(diaCandiato)) continue
-
-    // Si es hoy: solo vale si aún no pasaron las 20hs
-    if (offset === 0 && horaAct >= HORA_CORTE) continue
-
-    // Día anterior al de entrega es cuando cierra el pedido
     const fechaEntrega = new Date(ahora)
     fechaEntrega.setDate(ahora.getDate() + offset)
-    fechaEntrega.setHours(0, 0, 0, 0)
+    fechaEntrega.setHours(12, 0, 0, 0)
 
     // Cierre de pedidos: día anterior a las 20hs
     const fechaCierre = new Date(fechaEntrega)
     fechaCierre.setDate(fechaEntrega.getDate() - 1)
     fechaCierre.setHours(HORA_CORTE, 0, 0, 0)
 
+    const ahoraMs  = ahora.getTime()
+    const cierreMs = fechaCierre.getTime()
+
+    // Si el cierre ya pasó, buscar el siguiente día de entrega
+    if (ahoraMs >= cierreMs) continue
+
     return {
-      diaNombre: NOMBRES_DIA[diaCandiato],
-      diaNum:    fechaEntrega.getDate(),
-      mes:       NOMBRES_MES[fechaEntrega.getMonth()],
+      diaNombre:   NOMBRES_DIA[diaEntrega],
+      diaNum:      fechaEntrega.getDate(),
+      mes:         NOMBRES_MES[fechaEntrega.getMonth()],
       fechaCierre,
+      abierto:     true,
     }
   }
   return null
 }
 
 function formatCountdown(ms) {
-  if (ms <= 0) return { horas: '00', minutos: '00', segundos: '00' }
+  if (ms <= 0) return null
   const totalSeg = Math.floor(ms / 1000)
   const horas    = Math.floor(totalSeg / 3600)
   const minutos  = Math.floor((totalSeg % 3600) / 60)
@@ -54,28 +55,27 @@ function formatCountdown(ms) {
   }
 }
 
+function CountdownBox({ value, label }) {
+  return (
+    <div className="flex flex-col items-center rounded-lg bg-crate px-2.5 py-1 min-w-[36px]">
+      <span className="font-tag text-lg font-bold text-cream leading-none">{value}</span>
+      <span className="font-tag text-[9px] text-cream/80">{label}</span>
+    </div>
+  )
+}
+
 export default function Hero() {
-  const [entrega, setEntrega]       = useState(null)
-  const [countdown, setCountdown]   = useState(null)
-  const [vencido, setVencido]       = useState(false)
+  const [estado, setEstado]     = useState(null)
+  const [countdown, setCountdown] = useState(null)
 
   useEffect(() => {
     function actualizar() {
-      const prox = calcularProximaEntrega()
-      setEntrega(prox)
-
-      if (!prox) return
-
-      const resta = prox.fechaCierre - new Date()
-      if (resta <= 0) {
-        setVencido(true)
-        setCountdown(null)
-      } else {
-        setVencido(false)
-        setCountdown(formatCountdown(resta))
-      }
+      const e = calcularEstado()
+      setEstado(e)
+      if (!e) { setCountdown(null); return }
+      const resta = e.fechaCierre - new Date()
+      setCountdown(formatCountdown(resta))
     }
-
     actualizar()
     const interval = setInterval(actualizar, 1000)
     return () => clearInterval(interval)
@@ -93,7 +93,7 @@ export default function Hero() {
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-24 md:grid-cols-2 md:items-center">
         <div>
           <span className="inline-block rounded-full bg-mustard px-3 py-1 text-xs font-semibold text-charcoal">
-            Reparto en motocarro · San Miguel de Tucumán
+            Reparto en motocarro · Tucumán
           </span>
           <h1 className="mt-4 font-display text-4xl font-bold leading-tight text-cream sm:text-5xl">
             Del Mercofrut a tu hogar
@@ -120,45 +120,40 @@ export default function Hero() {
             />
           </div>
 
-          {/* Card de próxima entrega con countdown */}
-          {entrega && (
-            <div className="absolute -bottom-6 -left-6 rounded-card bg-cream px-5 py-4 shadow-soft min-w-[220px]">
-              {!vencido && countdown ? (
-                <>
-                  <p className="font-tag text-xs text-charcoal/60">
-                    Pedidos hasta hoy a las {HORA_CORTE}:00
-                  </p>
-                  <p className="mt-1 font-display text-base font-semibold text-leaf">
-                    Entrega el {entrega.diaNombre} {entrega.diaNum} de {entrega.mes}
-                  </p>
-                  <div className="mt-2 flex items-center gap-1">
-                    <div className="flex flex-col items-center rounded-lg bg-leaf px-2 py-1">
-                      <span className="font-tag text-lg font-bold text-cream leading-none">{countdown.horas}</span>
-                      <span className="font-tag text-[9px] text-cream/70">hs</span>
-                    </div>
-                    <span className="font-bold text-leaf text-lg">:</span>
-                    <div className="flex flex-col items-center rounded-lg bg-leaf px-2 py-1">
-                      <span className="font-tag text-lg font-bold text-cream leading-none">{countdown.minutos}</span>
-                      <span className="font-tag text-[9px] text-cream/70">min</span>
-                    </div>
-                    <span className="font-bold text-leaf text-lg">:</span>
-                    <div className="flex flex-col items-center rounded-lg bg-leaf px-2 py-1">
-                      <span className="font-tag text-lg font-bold text-cream leading-none">{countdown.segundos}</span>
-                      <span className="font-tag text-[9px] text-cream/70">seg</span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="font-tag text-xs text-charcoal/60">Próxima entrega</p>
-                  <p className="font-display text-lg font-semibold text-leaf">
-                    {entrega.diaNombre} {entrega.diaNum} de {entrega.mes}
-                  </p>
-                  <p className="font-tag text-xs text-charcoal/60 mt-1">12:00–18:00 hs</p>
-                </>
-              )}
-            </div>
-          )}
+          <div className="absolute -bottom-6 -left-6 rounded-card bg-cream px-5 py-4 shadow-soft min-w-[240px]">
+            {estado && countdown ? (
+              <>
+                <p className="font-tag text-xs text-crate font-semibold uppercase tracking-wide">
+                  Pedidos abiertos
+                </p>
+                <p className="mt-0.5 font-display text-base font-semibold text-charcoal">
+                  Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
+                </p>
+                <p className="font-tag text-xs text-charcoal/50 mb-2">
+                  Cierre de pedidos a las {HORA_CORTE}:00 hs
+                </p>
+                <div className="flex items-center gap-1">
+                  <CountdownBox value={countdown.horas}    label="hs" />
+                  <span className="font-bold text-crate text-xl">:</span>
+                  <CountdownBox value={countdown.minutos}  label="min" />
+                  <span className="font-bold text-crate text-xl">:</span>
+                  <CountdownBox value={countdown.segundos} label="seg" />
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="font-tag text-xs text-charcoal/50 uppercase tracking-wide">
+                  Pedidos cerrados
+                </p>
+                <p className="mt-1 font-display text-base font-semibold text-leaf">
+                  Próxima entrega disponible
+                </p>
+                <p className="font-tag text-xs text-charcoal/60 mt-0.5">
+                  Martes, Jueves y Viernes · 12:00–18:00
+                </p>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </section>
