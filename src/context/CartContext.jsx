@@ -3,7 +3,7 @@ import React, { createContext, useContext, useMemo, useState } from 'react'
 const CartContext = createContext(null)
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState({}) // { [productId]: { product, qty } }
+  const [items, setItems] = useState({})
 
   function addToCart(product, qty = 1) {
     setItems((prev) => {
@@ -27,7 +27,11 @@ export function CartProvider({ children }) {
     })
   }
 
-  const cartList = useMemo(() => Object.values(items), [items])
+  function clearCart() {
+    setItems({})
+  }
+
+  const cartList   = useMemo(() => Object.values(items), [items])
   const totalItems = useMemo(() => cartList.length, [cartList])
   const totalPrice = useMemo(
     () => cartList.reduce((s, i) => s + i.qty * i.product.price, 0),
@@ -35,7 +39,7 @@ export function CartProvider({ children }) {
   )
 
   return (
-    <CartContext.Provider value={{ items, cartList, addToCart, setQty, totalItems, totalPrice }}>
+    <CartContext.Provider value={{ items, cartList, addToCart, setQty, clearCart, totalItems, totalPrice }}>
       {children}
     </CartContext.Provider>
   )

@@ -16,8 +16,42 @@ function formatPrice(n) {
   return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
 
+function PedidoEnviado({ zona, onNuevoPedido }) {
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
+      <div className="flex items-center justify-center">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-leaf/10">
+          <span className="text-4xl">✅</span>
+        </div>
+      </div>
+      <h1 className="mt-6 font-display text-3xl font-bold text-charcoal">
+        ¡Pedido enviado!
+      </h1>
+      <p className="mt-3 text-charcoal/70">
+        Tu pedido fue enviado por WhatsApp. Te vamos a contactar para confirmar
+        la entrega en <strong>{zona}</strong>.
+      </p>
+      <div className="mt-6 rounded-card border border-line bg-creamDark p-5 text-sm text-charcoal/70 text-left space-y-2">
+        <p>📦 Estamos preparando tu pedido con productos frescos del Mercofrut.</p>
+        <p>🛵 El reparto es martes, jueves y viernes de 12:00 a 18:00.</p>
+        <p>💬 Si tenés alguna consulta, escribinos por WhatsApp al mismo número.</p>
+      </div>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <button onClick={onNuevoPedido} className="btn-primary">
+          Hacer otro pedido
+        </button>
+        <Link to="/" className="btn-secondary">
+          Volver al inicio
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 export default function Carrito() {
-  const { cartList, setQty, totalPrice } = useCart()
+  const { cartList, setQty, totalPrice, clearCart } = useCart()
+  const [pedidoEnviado, setPedidoEnviado] = useState(false)
+  const [zonaEnviada, setZonaEnviada] = useState('')
 
   const [form, setForm] = useState({
     nombre:     '',
@@ -89,6 +123,22 @@ export default function Carrito() {
     const mensaje = partes.join('\n')
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`
     window.open(url, '_blank')
+
+    // Guardar zona y limpiar carrito
+    setZonaEnviada(zonaSeleccionada.label)
+    clearCart()
+    setPedidoEnviado(true)
+  }
+
+  function handleNuevoPedido() {
+    setPedidoEnviado(false)
+    setZonaEnviada('')
+    setForm({ nombre: '', direccion: '', celular: '', zona: '', medio_pago: '', nota: '' })
+  }
+
+  // Pantalla de confirmación
+  if (pedidoEnviado) {
+    return <PedidoEnviado zona={zonaEnviada} onNuevoPedido={handleNuevoPedido} />
   }
 
   if (cartList.length === 0) {
@@ -139,7 +189,7 @@ export default function Carrito() {
         })}
       </div>
 
-      {/* Formulario de datos de entrega */}
+      {/* Formulario */}
       <div className="mt-8">
         <h2 className="font-display text-xl font-semibold text-charcoal">Datos de entrega</h2>
         <p className="mt-1 text-sm text-charcoal/60">
@@ -147,52 +197,40 @@ export default function Carrito() {
         </p>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {/* Nombre */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Nombre completo <span className="text-crate">*</span>
             </label>
             <input
-              name="nombre"
-              value={form.nombre}
-              onChange={handleChange}
+              name="nombre" value={form.nombre} onChange={handleChange}
               placeholder="Juan Pérez"
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
-                errors.nombre ? 'border-crate bg-crate/5' : 'border-line bg-white'
-              }`}
+                errors.nombre ? 'border-crate bg-crate/5' : 'border-line bg-white'}`}
             />
             {errors.nombre && <span className="text-xs text-crate">{errors.nombre}</span>}
           </div>
 
-          {/* Celular */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Celular de quien recibe <span className="text-crate">*</span>
             </label>
             <input
-              name="celular"
-              value={form.celular}
-              onChange={handleChange}
+              name="celular" value={form.celular} onChange={handleChange}
               placeholder="381 4xx xxxx"
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
-                errors.celular ? 'border-crate bg-crate/5' : 'border-line bg-white'
-              }`}
+                errors.celular ? 'border-crate bg-crate/5' : 'border-line bg-white'}`}
             />
             {errors.celular && <span className="text-xs text-crate">{errors.celular}</span>}
           </div>
 
-          {/* Zona */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Zona de entrega <span className="text-crate">*</span>
             </label>
             <select
-              name="zona"
-              value={form.zona}
-              onChange={handleChange}
+              name="zona" value={form.zona} onChange={handleChange}
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
-                errors.zona ? 'border-crate bg-crate/5' : 'border-line bg-white'
-              }`}
+                errors.zona ? 'border-crate bg-crate/5' : 'border-line bg-white'}`}
             >
               <option value="">Seleccioná tu zona...</option>
               {ZONAS.map((z) => (
@@ -209,18 +247,14 @@ export default function Carrito() {
             )}
           </div>
 
-          {/* Medio de pago */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-charcoal">
               Medio de pago <span className="text-crate">*</span>
             </label>
             <select
-              name="medio_pago"
-              value={form.medio_pago}
-              onChange={handleChange}
+              name="medio_pago" value={form.medio_pago} onChange={handleChange}
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
-                errors.medio_pago ? 'border-crate bg-crate/5' : 'border-line bg-white'
-              }`}
+                errors.medio_pago ? 'border-crate bg-crate/5' : 'border-line bg-white'}`}
             >
               <option value="">Seleccioná cómo pagás...</option>
               {MEDIOS_PAGO.map((m) => (
@@ -230,33 +264,26 @@ export default function Carrito() {
             {errors.medio_pago && <span className="text-xs text-crate">{errors.medio_pago}</span>}
           </div>
 
-          {/* Dirección */}
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label className="text-sm font-medium text-charcoal">
               Dirección de entrega <span className="text-crate">*</span>
             </label>
             <input
-              name="direccion"
-              value={form.direccion}
-              onChange={handleChange}
+              name="direccion" value={form.direccion} onChange={handleChange}
               placeholder="Av. Alem 500, piso 3"
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${
-                errors.direccion ? 'border-crate bg-crate/5' : 'border-line bg-white'
-              }`}
+                errors.direccion ? 'border-crate bg-crate/5' : 'border-line bg-white'}`}
             />
             {errors.direccion && <span className="text-xs text-crate">{errors.direccion}</span>}
           </div>
 
-          {/* Nota */}
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label className="text-sm font-medium text-charcoal">
               Nota para el repartidor{' '}
               <span className="font-normal text-charcoal/40">(opcional)</span>
             </label>
             <textarea
-              name="nota"
-              value={form.nota}
-              onChange={handleChange}
+              name="nota" value={form.nota} onChange={handleChange}
               placeholder="Ej: dejar en portería, tocar timbre 2B, etc."
               rows={3}
               className="resize-none rounded-xl border border-line bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf"
@@ -265,20 +292,15 @@ export default function Carrito() {
         </div>
       </div>
 
-      {/* Resumen de precios */}
+      {/* Resumen */}
       <div className="mt-6 rounded-card border border-line bg-creamDark p-4">
         <div className="flex justify-between text-sm text-charcoal/70">
           <span>Subtotal productos</span>
           <span>${formatPrice(totalPrice)}</span>
         </div>
         <div className="mt-1 flex justify-between text-sm text-charcoal/70">
-          <span>
-            Servicio de abastecimiento
-            {zonaSeleccionada && ` · ${zonaSeleccionada.label}`}
-          </span>
-          <span>
-            {costoServicio !== null ? `$${formatPrice(costoServicio)}` : '—'}
-          </span>
+          <span>Servicio de abastecimiento{zonaSeleccionada ? ` · ${zonaSeleccionada.label}` : ''}</span>
+          <span>{costoServicio !== null ? `$${formatPrice(costoServicio)}` : '—'}</span>
         </div>
         <div className="mt-3 flex justify-between border-t border-line pt-3">
           <span className="font-semibold text-charcoal">Total estimado</span>
