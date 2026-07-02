@@ -6,18 +6,26 @@ function formatPrice(n) {
 }
 
 export default function ProductCard({ product }) {
-  const { items, setQty } = useCart()
-  const paso = product.paso || 1
-  const currentQty = items[product.id]?.qty || 0
-  const [localQty, setLocalQty] = useState(currentQty)
+  const { addToCart } = useCart()
+  const paso    = product.paso || 1
+  const esPorKg = paso === 0.5
 
-  function change(delta) {
-    const next = Math.max(0, Math.round((localQty + delta) * 100) / 100)
-    setLocalQty(next)
-    setQty(product, next)
+  const [qty, setQty]         = useState(paso)
+  const [agregado, setAgregado] = useState(false)
+
+  function aumentar() {
+    setQty((q) => Math.round((q + paso) * 100) / 100)
   }
 
-  const esPorKg = paso === 0.5
+  function disminuir() {
+    setQty((q) => Math.max(paso, Math.round((q - paso) * 100) / 100))
+  }
+
+  function handleAgregar() {
+    addToCart(product, qty)
+    setAgregado(true)
+    setTimeout(() => setAgregado(false), 1500)
+  }
 
   return (
     <div className="crate-card flex w-full shrink-0 snap-start flex-col overflow-hidden sm:w-auto relative">
@@ -27,7 +35,12 @@ export default function ProductCard({ product }) {
         </span>
       )}
       <div className="aspect-square w-full overflow-hidden bg-creamDark">
-        <img src={product.img} alt={product.name} className="h-full w-full object-cover" loading="lazy" />
+        <img
+          src={product.img}
+          alt={product.name}
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <h3 className="font-display text-base font-semibold leading-snug text-charcoal">
@@ -35,44 +48,39 @@ export default function ProductCard({ product }) {
         </h3>
         <div className="flex items-baseline gap-1">
           <span className="tag-price text-lg font-bold">${formatPrice(product.price)}</span>
-          {esPorKg && (
-            <span className="text-xs text-charcoal/50">/ kg</span>
-          )}
+          {esPorKg && <span className="text-xs text-charcoal/50">/ kg</span>}
         </div>
 
-        <div className="mt-auto flex items-center justify-between pt-2">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+          {/* Selector de cantidad */}
           <div className="flex items-center gap-2">
             <button
               className="stepper-btn"
-              onClick={() => change(-paso)}
+              onClick={disminuir}
               aria-label="Quitar"
             >−</button>
             <span className="w-10 text-center text-sm font-semibold">
-              {localQty > 0
-                ? esPorKg
-                  ? `${localQty} kg`
-                  : localQty
-                : '0'}
+              {esPorKg ? `${qty} kg` : qty}
             </span>
             <button
               className="stepper-btn"
-              onClick={() => change(paso)}
+              onClick={aumentar}
               aria-label="Agregar"
             >+</button>
           </div>
+
+          {/* Botón agregar al carrito */}
           <button
-            className="rounded-full bg-leaf px-3 py-2 text-xs font-semibold text-cream transition-colors hover:bg-leafLight"
-            onClick={() => change(paso)}
+            onClick={handleAgregar}
+            className={`rounded-full px-3 py-2 text-xs font-semibold text-cream transition-all ${
+              agregado
+                ? 'bg-mustard'
+                : 'bg-leaf hover:bg-leafLight'
+            }`}
           >
-            'Agregar'
+            {agregado ? '✓ Listo' : 'Agregar'}
           </button>
         </div>
-
-        {esPorKg && localQty > 0 && (
-          <p className="text-xs text-charcoal/50 text-right">
-            Subtotal: ${formatPrice(product.price * localQty)}
-          </p>
-        )}
       </div>
     </div>
   )
