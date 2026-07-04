@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
+import { useProducts } from '../hooks/useProducts.js'
+import ProductCarousel from '../components/ProductCarousel.jsx'
 
 const WHATSAPP_NUMBER = '5493814571329'
 
@@ -85,9 +87,14 @@ function PedidoEnviado({ zona, entrega, onNuevoPedido }) {
 
 export default function Carrito() {
   const { cartList, setQty, totalPrice, clearCart } = useCart()
+  const { products } = useProducts()
   const [pedidoEnviado, setPedidoEnviado] = useState(false)
   const [zonaEnviada, setZonaEnviada]     = useState('')
   const [entregaEnviada, setEntregaEnviada] = useState(null)
+
+  // Destacados para recomendar antes de cerrar, sin los que ya están en el carrito
+  const idsEnCarrito = new Set(cartList.map(({ product }) => product.id))
+  const recomendados = products.filter((p) => p.featured && !idsEnCarrito.has(p.id))
 
   const [form, setForm] = useState({
     nombre: '', direccion: '', celular: '', zona: '', medio_pago: '', nota: '',
@@ -251,6 +258,17 @@ export default function Carrito() {
           )
         })}
       </div>
+
+      {/* Recomendados: sumar algo más antes de cerrar (venta por impulso) */}
+      {recomendados.length > 0 && (
+        <div className="mt-2 -mx-4 sm:-mx-6">
+          <ProductCarousel
+            title="Sumá algo más a tu pedido"
+            icon="🛒"
+            products={recomendados}
+          />
+        </div>
+      )}
 
       {/* Formulario */}
       <div className="mt-8">
