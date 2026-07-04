@@ -54,9 +54,10 @@ export default function ProductCard({ product }) {
           {unidadLabel && <span className="text-xs text-charcoal/50">/ {unidadLabel}</span>}
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+        {/* En mobile se apilan (stepper arriba, botón abajo). Desde sm van en fila. */}
+        <div className="mt-auto flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
           {/* Selector de cantidad */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2 sm:justify-start">
             <button
               className="stepper-btn"
               onClick={disminuir}
@@ -75,7 +76,7 @@ export default function ProductCard({ product }) {
           {/* Botón agregar al carrito */}
           <button
             onClick={handleAgregar}
-            className={`rounded-full px-3 py-2 text-xs font-semibold text-cream transition-all ${
+            className={`w-full rounded-full px-3 py-2 text-xs font-semibold text-cream transition-all sm:w-auto ${
               agregado
                 ? 'bg-mustard'
                 : 'bg-leaf hover:bg-leafLight'
