@@ -32,11 +32,12 @@ function calcularEstado() {
     if (ahoraMs >= cierreMs) continue
 
     return {
-      diaNombre:   NOMBRES_DIA[diaEntrega],
-      diaNum:      fechaEntrega.getDate(),
-      mes:         NOMBRES_MES[fechaEntrega.getMonth()],
+      diaNombre:       NOMBRES_DIA[diaEntrega],
+      diaNum:          fechaEntrega.getDate(),
+      mes:             NOMBRES_MES[fechaEntrega.getMonth()],
+      diaCierreNombre: NOMBRES_DIA[fechaCierre.getDay()], // día del cierre (anterior a la entrega)
       fechaCierre,
-      abierto:     true,
+      abierto:         true,
     }
   }
   return null
@@ -116,7 +117,7 @@ export default function Hero() {
                     Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
                   </p>
                   <p className="font-tag text-xs text-charcoal/50 mb-2">
-                    Cierre de pedidos a las {HORA_CORTE}:00 hs
+                    Cierre de pedidos el {estado.diaCierreNombre} a las {HORA_CORTE}:00 hs
                   </p>
                   <div className="flex items-center gap-1">
                     <CountdownBox value={countdown.horas}    label="hs" />
@@ -163,7 +164,7 @@ export default function Hero() {
                   Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
                 </p>
                 <p className="font-tag text-xs text-charcoal/50 mb-2">
-                  Cierre de pedidos a las {HORA_CORTE}:00 hs
+                  Cierre de pedidos el {estado.diaCierreNombre} a las {HORA_CORTE}:00 hs
                 </p>
                 <div className="flex items-center gap-1">
                   <CountdownBox value={countdown.horas}    label="hs" />
