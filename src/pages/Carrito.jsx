@@ -214,25 +214,16 @@ export default function Carrito() {
           const paso    = product.paso || 1
           const esPorKg = paso === 0.5
           return (
-            <div key={product.id} className="flex items-center gap-4 p-4">
-              <img src={product.img} alt={product.name} className="h-16 w-16 rounded-lg object-cover" />
-              <div className="flex-1">
-                <p className="font-display font-semibold text-charcoal">{product.name}</p>
+            <div key={product.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
+              <img src={product.img} alt={product.name} className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+              <div className="min-w-0 flex-1">
+                <p className="font-display font-semibold text-charcoal truncate">{product.name}</p>
                 <p className="text-xs text-charcoal/50">{esPorKg ? 'kg' : product.unit}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="stepper-btn" onClick={() => cambiarQty(product, qty, -1)}>−</button>
-                <span className="w-10 text-center text-sm font-semibold">
-                  {esPorKg ? `${qty} kg` : qty}
-                </span>
-                <button className="stepper-btn" onClick={() => cambiarQty(product, qty, 1)}>+</button>
-              </div>
-              <span className="tag-price w-24 text-right text-sm font-bold">
-                ${formatPrice(product.price * qty)}
-              </span>
+              {/* Tacho: arriba a la derecha en mobile, al final de la fila en desktop */}
               <button
                 onClick={() => setQty(product, 0)}
-                className="ml-1 flex h-8 w-8 items-center justify-center rounded-full text-charcoal/30 transition-colors hover:bg-crate/10 hover:text-crate"
+                className="order-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-charcoal/30 transition-colors hover:bg-crate/10 hover:text-crate sm:order-none sm:ml-1"
                 aria-label="Eliminar producto"
                 title="Eliminar del carrito"
               >
@@ -243,6 +234,19 @@ export default function Carrito() {
                   <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
                 </svg>
               </button>
+              {/* Stepper + precio: fila completa propia en mobile, en línea en desktop */}
+              <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-normal">
+                <div className="flex items-center gap-2">
+                  <button className="stepper-btn" onClick={() => cambiarQty(product, qty, -1)}>−</button>
+                  <span className="w-10 text-center text-sm font-semibold">
+                    {esPorKg ? `${qty} kg` : qty}
+                  </span>
+                  <button className="stepper-btn" onClick={() => cambiarQty(product, qty, 1)}>+</button>
+                </div>
+                <span className="tag-price text-right text-sm font-bold sm:w-24">
+                  ${formatPrice(product.price * qty)}
+                </span>
+              </div>
             </div>
           )
         })}
