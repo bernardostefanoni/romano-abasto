@@ -10,6 +10,9 @@ export default function ProductCard({ product }) {
   const paso    = product.paso || 1
   const esPorKg = paso === 0.5
 
+  // Etiqueta de unidad que muestra el sync (kg, atado, u, x30, etc.)
+  const unidadLabel = product.unidad_display || product.unidad || ''
+
   const [qty, setQty]         = useState(paso)
   const [agregado, setAgregado] = useState(false)
 
@@ -48,7 +51,7 @@ export default function ProductCard({ product }) {
         </h3>
         <div className="flex items-baseline gap-1">
           <span className="tag-price text-lg font-bold">${formatPrice(product.price)}</span>
-          {esPorKg && <span className="text-xs text-charcoal/50">/ kg</span>}
+          {unidadLabel && <span className="text-xs text-charcoal/50">/ {unidadLabel}</span>}
         </div>
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-2">
