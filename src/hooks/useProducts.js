@@ -31,16 +31,17 @@ export function useProducts() {
         if (error) throw error
 
         const normalized = data.map((p) => ({
-          id:            p.id,
-          name:          p.nombre,
-          category:      normalizarCategoria(p.categoria),
-          unit:          p.unidad_display || p.unidad,
-          precio_por:    p.unidad_display || p.unidad,
-          price:         Number(p.precio),
-          featured:      p.destacado,
-          masPedido:     p.mas_pedido,
-          paso:          Number(p.paso) || 1,
-          img:           p.imagen_url || defaultImage(p.categoria),
+          id:             p.id,
+          name:           p.nombre,
+          category:       normalizarCategoria(p.categoria),
+          unit:           p.unidad_display || p.unidad,
+          precio_por:     p.unidad_display || p.unidad,
+          unidad_display: p.unidad_display || p.unidad,
+          price:          Number(p.precio),
+          featured:       p.destacado,
+          masPedido:      p.mas_pedido,
+          paso:           Number(p.paso) || 1,
+          img:            p.imagen_url || defaultImage(p.categoria),
         }))
 
         const catMap = {}
