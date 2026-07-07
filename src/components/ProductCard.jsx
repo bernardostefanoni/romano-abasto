@@ -8,10 +8,20 @@ function formatPrice(n) {
 export default function ProductCard({ product }) {
   const { addToCart } = useCart()
   const paso    = product.paso || 1
-  const esPorKg = paso === 0.5
+  const esPorKg = paso === 0.5 && !product.pesoVariable  // 0.5 real de kg (no zapallo)
 
   // Etiqueta de unidad que muestra el sync (kg, atado, u, x30, etc.)
   const unidadLabel = product.unidad_display || product.unidad || ''
+
+  // Texto de la cantidad en el stepper:
+  //  - kg          -> "0.5 kg"
+  //  - peso variable-> "0.5 u" (permite medio, pero se pide por unidad)
+  //  - entero      -> "1"
+  function qtyTexto(q) {
+    if (esPorKg) return `${q} kg`
+    if (product.pesoVariable) return `${q} ${unidadLabel || 'u'}`
+    return q
+  }
 
   const [qty, setQty]         = useState(paso)
   const [agregado, setAgregado] = useState(false)
@@ -69,7 +79,7 @@ export default function ProductCard({ product }) {
               aria-label="Quitar"
             >−</button>
             <span className="w-10 text-center text-sm font-semibold">
-              {esPorKg ? `${qty} kg` : qty}
+              {qtyTexto(qty)}
             </span>
             <button
               className="stepper-btn"

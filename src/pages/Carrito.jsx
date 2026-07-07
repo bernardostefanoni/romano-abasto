@@ -134,8 +134,12 @@ export default function Carrito() {
     const lineas = []
     cartList.forEach(({ product, qty }) => {
       const paso    = Number(product.paso) || 1
-      const esPorKg = paso <= 0.5
-      const qtyStr  = esPorKg ? `${qty} kg` : `x${qty}`
+      const esPorKg = paso <= 0.5 && !product.pesoVariable
+      // kg -> "1 kg" ; peso variable -> "1 u (aprox)" ; entero -> "x1"
+      let qtyStr
+      if (esPorKg) qtyStr = `${qty} kg`
+      else if (product.pesoVariable) qtyStr = `${qty} ${product.unidad_display || product.unit || 'u'} (aprox)`
+      else qtyStr = `x${qty}`
 
       lineas.push(`> ${product.name} ${qtyStr} — $${formatPrice(product.price * qty)}`)
 
@@ -219,13 +223,20 @@ export default function Carrito() {
       <div className="mt-6 divide-y divide-line rounded-card border border-line bg-white shadow-soft">
         {cartList.map(({ product, qty }) => {
           const paso    = product.paso || 1
-          const esPorKg = paso === 0.5
+          const esPorKg = paso === 0.5 && !product.pesoVariable
+          const unidadLabel = product.unidad_display || product.unit || 'u'
+          const qtyTxt  = esPorKg
+            ? `${qty} kg`
+            : (product.pesoVariable ? `${qty} ${unidadLabel}` : qty)
           return (
             <div key={product.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
               <img src={product.img} alt={product.name} className="h-16 w-16 shrink-0 rounded-lg object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="font-display font-semibold text-charcoal truncate">{product.name}</p>
-                <p className="text-xs text-charcoal/50">{esPorKg ? 'kg' : product.unit}</p>
+                <p className="text-xs text-charcoal/50">
+                  {esPorKg ? 'kg' : unidadLabel}
+                  {product.pesoVariable && ' · precio estimado'}
+                </p>
               </div>
               {/* Tacho: arriba a la derecha en mobile, al final de la fila en desktop */}
               <button
@@ -246,7 +257,7 @@ export default function Carrito() {
                 <div className="flex items-center gap-2">
                   <button className="stepper-btn" onClick={() => cambiarQty(product, qty, -1)}>−</button>
                   <span className="w-10 text-center text-sm font-semibold">
-                    {esPorKg ? `${qty} kg` : qty}
+                    {qtyTxt}
                   </span>
                   <button className="stepper-btn" onClick={() => cambiarQty(product, qty, 1)}>+</button>
                 </div>
