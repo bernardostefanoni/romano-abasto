@@ -53,6 +53,11 @@ export default function ProductCard({ product }) {
           <span className="tag-price text-lg font-bold">${formatPrice(product.price)}</span>
           {unidadLabel && <span className="text-xs text-charcoal/50">/ {unidadLabel}</span>}
         </div>
+        {product.pesoVariable && (
+          <p className="text-[11px] leading-tight text-mustard font-medium">
+            Precio estimado · se ajusta al peso real
+          </p>
+        )}
 
         {/* En mobile se apilan (stepper arriba, botón abajo). Desde sm van en fila. */}
         <div className="mt-auto flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">

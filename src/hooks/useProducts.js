@@ -40,6 +40,7 @@ export function useProducts() {
           price:          Number(p.precio),
           featured:       p.destacado,
           masPedido:      p.mas_pedido,
+          pesoVariable:   p.peso_variable || false,
           paso:           Number(p.paso) || 1,
           img:            p.imagen_url || defaultImage(p.categoria),
         }))
