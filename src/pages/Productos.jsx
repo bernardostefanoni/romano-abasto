@@ -3,13 +3,23 @@ import { Link } from 'react-router-dom'
 import { useProducts } from '../hooks/useProducts.js'
 import ProductCard from '../components/ProductCard.jsx'
 
+// Categoría que se muestra seleccionada al entrar a /productos.
+// Se fija a mano (y no "la primera de la lista") porque la lista viene ordenada
+// alfabéticamente: al agregar "Bolsas y cajones" pasaría a abrir por defecto en
+// bolsas de 20kg en vez de en frutas y verduras.
+const CAT_POR_DEFECTO = 'frutas-verduras'
+
 export default function Productos() {
   const { products, categories, loading, error } = useProducts()
   const [activeCat, setActiveCat] = useState(null)
   const [query, setQuery] = useState('')
 
-  // Seleccionar primera categoría cuando carguen los datos
-  const catActiva = activeCat || categories[0]?.id
+  // Seleccionar la categoría por defecto cuando carguen los datos.
+  // Si por algo no existe, cae a la primera disponible.
+  const catActiva =
+    activeCat ||
+    categories.find((c) => c.id === CAT_POR_DEFECTO)?.id ||
+    categories[0]?.id
 
   const filtered = useMemo(() => {
     return products.filter((p) => {

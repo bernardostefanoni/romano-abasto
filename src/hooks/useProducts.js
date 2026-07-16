@@ -4,6 +4,10 @@ import { supabase } from '../lib/supabase.js'
 function normalizarCategoria(nombre) {
   if (!nombre) return 'otros'
   const n = nombre.toLowerCase()
+  // "Bolsas y cajones" va primero: es una categoría de PRESENTACIÓN y puede
+  // contener frutas/verduras en el nombre a futuro (ej: "Bolsas y cajones de
+  // verdura"). Si se evaluara después, caería en 'frutas-verduras' por error.
+  if (n.includes('bolsa') || n.includes('cajon') || n.includes('cajón')) return 'bolsas-cajones'
   if (n.includes('fruta') || n.includes('verdura')) return 'frutas-verduras'
   if (n.includes('huevo')) return 'huevos'
   if (n.includes('limpieza') || n.includes('lavandina') || n.includes('detergente')) return 'limpieza'
@@ -71,7 +75,7 @@ function catIcon(id) {
   const icons = {
     'frutas-verduras': '🥬', 'huevos': '🥚', 'limpieza': '🧼',
     'panaderia': '🥖', 'almacen': '🍪', 'pasteleria': '🧁',
-    'panificados': '🥐', 'otros': '📦',
+    'panificados': '🥐', 'bolsas-cajones': '🧺', 'otros': '📦',
   }
   return icons[id] || '📦'
 }
