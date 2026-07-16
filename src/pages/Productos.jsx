@@ -72,6 +72,13 @@ export default function Productos() {
                 {c.name}
               </button>
             ))}
+            <Link
+              to="/packs"
+              className="rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-charcoal transition-colors hover:border-leaf/50"
+            >
+              <span className="mr-1.5">📦</span>
+              Packs
+            </Link>
           </div>
 
           {filtered.length > 0 ? (
