@@ -31,7 +31,7 @@ export default function PackCard({ pack }) {
           Pack
         </span>
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-5">
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-display text-lg font-semibold leading-snug">{pack.name}</h3>
           <span className="tag-price whitespace-nowrap text-lg font-bold">
@@ -39,7 +39,7 @@ export default function PackCard({ pack }) {
           </span>
         </div>
         {pack.desc && (
-          <p className="text-sm text-charcoal/70 line-clamp-3">{pack.desc}</p>
+          <p className="text-sm text-charcoal/70 line-clamp-2">{pack.desc}</p>
         )}
 
         {components.length > 0 && (
@@ -77,17 +77,17 @@ export default function PackCard({ pack }) {
           </div>
         )}
 
-        <div className="mt-auto flex flex-col gap-2 pt-4">
+        <div className="mt-auto flex items-center gap-2 pt-2">
           <button
             onClick={handleAgregar}
-            className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold text-cream transition-all ${
+            className={`flex-1 rounded-full px-4 py-2.5 text-sm font-semibold text-cream transition-all ${
               agregado ? 'bg-mustard' : 'bg-leaf hover:bg-leafLight'
             }`}
           >
-            {agregado ? '✓ Agregado al carrito' : 'Agregar al carrito'}
+            {agregado ? '✓ Agregado' : 'Agregar al carrito'}
           </button>
-          <Link to={`/packs/${pack.id}`} className="btn-secondary w-full">
-            Ver detalle
+          <Link to={`/packs/${pack.id}`} className="btn-secondary shrink-0 px-4 py-2.5">
+            Detalle
           </Link>
         </div>
       </div>
