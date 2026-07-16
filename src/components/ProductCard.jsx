@@ -13,6 +13,11 @@ export default function ProductCard({ product }) {
   // Etiqueta de unidad que muestra el sync (kg, atado, u, x30, etc.)
   const unidadLabel = product.unidad_display || product.unidad || ''
 
+  // Para bolsas cerradas (ej. "Papa bolsa 20kg"), mostramos el precio por kg
+  // como referencia para comparar contra el producto suelto y la competencia.
+  const kgMatch = unidadLabel === 'bolsa' ? product.name.match(/(\d+(?:[.,]\d+)?)\s*kg/i) : null
+  const precioPorKg = kgMatch ? product.price / parseFloat(kgMatch[1].replace(',', '.')) : null
+
   // Texto de la cantidad en el stepper:
   //  - kg          -> "0.5 kg"
   //  - peso variable-> "0.5 u" (permite medio, pero se pide por unidad)
@@ -63,6 +68,9 @@ export default function ProductCard({ product }) {
           <span className="tag-price text-lg font-bold">${formatPrice(product.price)}</span>
           {unidadLabel && <span className="text-xs text-charcoal/50">/ {unidadLabel}</span>}
         </div>
+        {precioPorKg && (
+          <p className="text-[11px] text-charcoal/50">${formatPrice(precioPorKg)}/kg</p>
+        )}
         {product.pesoVariable && (
           <p className="text-[11px] leading-tight text-mustard font-medium">
             Precio estimado · se ajusta al peso real
