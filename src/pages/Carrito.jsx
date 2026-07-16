@@ -270,6 +270,12 @@ export default function Carrito() {
         })}
       </div>
 
+      {/* Franja de confianza: reduce la duda de "y si llega mal" justo antes de pagar */}
+      <div className="mt-3 flex items-center gap-2 rounded-full border border-leaf/20 bg-leaf/5 px-4 py-2 text-xs text-charcoal/70">
+        <span aria-hidden>🛡️</span>
+        <span>Garantía de frescura: si algo llega en mal estado, te lo reemplazamos o te lo descontamos del próximo pedido.</span>
+      </div>
+
       {/* Recomendados: sumar algo más antes de cerrar (venta por impulso) */}
       {recomendados.length > 0 && (
         <div className="mt-2 -mx-4 sm:-mx-6">
