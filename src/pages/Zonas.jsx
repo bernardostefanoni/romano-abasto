@@ -1,18 +1,20 @@
 import React, { useState } from 'react'
-import { deliveryZones } from '../data/catalog.js'
+import { useZonas } from '../hooks/useZonas.js'
+import { diasATexto, horarioATexto } from '../lib/entrega.js'
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR')
 }
 
 export default function Zonas() {
+  const { zonas, loading } = useZonas()
   const [search, setSearch] = useState('')
   const [result, setResult] = useState(null)
 
   function checkZone(e) {
     e.preventDefault()
-    const found = deliveryZones.find(
-      (z) => z.disponible && z.zone.toLowerCase().includes(search.toLowerCase())
+    const found = zonas.find(
+      (z) => z.disponible && z.nombre.toLowerCase().includes(search.toLowerCase())
     )
     setResult(found || 'not-found')
   }
@@ -47,8 +49,8 @@ export default function Zonas() {
 
       {result && result !== 'not-found' && (
         <div className="mt-5 rounded-card border border-leaf/30 bg-leaf/5 p-4 text-sm text-leaf">
-          Llegamos a <strong>{result.zone}</strong> los días <strong>{result.days}</strong>,
-          de <strong>{result.time}</strong>. Costo del servicio: <strong>${formatPrice(result.costo)}</strong>.
+          Llegamos a <strong>{result.nombre}</strong> los días <strong>{diasATexto(result.dias)}</strong>,
+          de <strong>{horarioATexto(result)}</strong>. Costo del servicio: <strong>${formatPrice(result.costo)}</strong>.
         </div>
       )}
       {result === 'not-found' && (
@@ -60,30 +62,34 @@ export default function Zonas() {
       <h2 className="mt-12 mb-4 font-display text-xl font-semibold text-charcoal">
         Zonas de entrega
       </h2>
-      <div className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white shadow-soft">
-        {deliveryZones.map((z) => (
-          <div key={z.zone} className="flex items-center justify-between gap-3 px-5 py-4">
-            <div className="flex items-center gap-3">
-              <span aria-hidden className={z.disponible ? 'text-leaf' : 'text-charcoal/30'}>📍</span>
-              <div>
-                <p className={`text-sm font-medium ${z.disponible ? 'text-charcoal' : 'text-charcoal/40'}`}>
-                  {z.zone}
-                </p>
-                {z.disponible ? (
-                  <p className="text-xs text-charcoal/50">{z.days} · {z.time}</p>
-                ) : (
-                  <p className="text-xs text-charcoal/40">Próximamente</p>
-                )}
+      {loading ? (
+        <p className="text-center text-sm text-charcoal/50">Cargando zonas...</p>
+      ) : (
+        <div className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white shadow-soft">
+          {zonas.map((z) => (
+            <div key={z.id} className="flex items-center justify-between gap-3 px-5 py-4">
+              <div className="flex items-center gap-3">
+                <span aria-hidden className={z.disponible ? 'text-leaf' : 'text-charcoal/30'}>📍</span>
+                <div>
+                  <p className={`text-sm font-medium ${z.disponible ? 'text-charcoal' : 'text-charcoal/40'}`}>
+                    {z.nombre}
+                  </p>
+                  {z.disponible ? (
+                    <p className="text-xs text-charcoal/50">{diasATexto(z.dias)} · {horarioATexto(z)}</p>
+                  ) : (
+                    <p className="text-xs text-charcoal/40">Próximamente</p>
+                  )}
+                </div>
               </div>
+              {z.disponible ? (
+                <span className="text-sm font-semibold text-leaf">${formatPrice(z.costo)}</span>
+              ) : (
+                <span className="rounded-full bg-creamDark px-3 py-1 text-xs text-charcoal/40">Próximamente</span>
+              )}
             </div>
-            {z.disponible ? (
-              <span className="text-sm font-semibold text-leaf">${formatPrice(z.costo)}</span>
-            ) : (
-              <span className="rounded-full bg-creamDark px-3 py-1 text-xs text-charcoal/40">Próximamente</span>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <p className="mt-4 text-xs text-charcoal/50 text-center">
         El costo indicado corresponde al servicio de abastecimiento programado por entrega.

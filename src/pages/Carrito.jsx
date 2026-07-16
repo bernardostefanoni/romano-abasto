@@ -2,48 +2,11 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { useProducts } from '../hooks/useProducts.js'
+import { useZonas } from '../hooks/useZonas.js'
+import { calcularProximaEntrega, horarioATexto } from '../lib/entrega.js'
 import ProductCarousel from '../components/ProductCarousel.jsx'
 
 const WHATSAPP_NUMBER = '5493814571329'
-
-// Días de entrega por zona (0=Dom, 1=Lun, 2=Mar, 3=Mié, 4=Jue, 5=Vie, 6=Sáb)
-// Cuando cada zona tenga sus propios días, solo modificar este objeto
-const DIAS_POR_ZONA = {
-  smt:       [2, 4, 5], // Martes, Jueves, Viernes
-  alderetes: [2, 4, 5], // Martes, Jueves, Viernes
-  yerba:     [],
-}
-
-const NOMBRES_DIA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
-const NOMBRES_MES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
-
-function proximaEntrega(zonaId) {
-  const dias = DIAS_POR_ZONA[zonaId]
-  if (!dias || dias.length === 0) return null
-
-  const hoy    = new Date()
-  const diaHoy = hoy.getDay()
-
-  // Buscar el próximo día de entrega (puede ser hoy mismo si aún no pasó la hora)
-  for (let offset = 1; offset <= 7; offset++) {
-    const diaCandiato = (diaHoy + offset) % 7
-    if (dias.includes(diaCandiato)) {
-      const fecha = new Date(hoy)
-      fecha.setDate(hoy.getDate() + offset)
-      return {
-        nombre: NOMBRES_DIA[diaCandiato],
-        fecha:  `${fecha.getDate()} de ${NOMBRES_MES[fecha.getMonth()]}`,
-      }
-    }
-  }
-  return null
-}
-
-const ZONAS = [
-  { id: 'smt',       label: 'San Miguel de Tucumán',       costo: 3500, disponible: true },
-  { id: 'alderetes', label: 'Alderetes',                   costo: 2000, disponible: true },
-  { id: 'yerba',     label: 'Yerba Buena (próximamente)',  costo: 0,    disponible: false },
-]
 
 const MEDIOS_PAGO = ['Transferencia bancaria', 'Efectivo']
 
@@ -69,7 +32,8 @@ function PedidoEnviado({ zona, entrega, onNuevoPedido }) {
       <div className="mt-6 rounded-card border border-line bg-creamDark p-5 text-sm text-charcoal/70 text-left space-y-2">
         <p>📦 Estamos preparando tu pedido con productos frescos del Mercofrut.</p>
         {entrega && (
-          <p>🛵 Tu próxima entrega estimada es el <strong>{entrega.nombre} {entrega.fecha}</strong>, de 12:00 a 18:00.</p>
+          <p>🛵 Tu próxima entrega estimada es el <strong>{entrega.diaNombre} {entrega.diaNum} de {entrega.mes}</strong>
+            {entrega.horario ? `, de ${entrega.horario}` : ''}.</p>
         )}
         <p>💬 Si tenés alguna consulta, escribinos por WhatsApp al mismo número.</p>
       </div>
@@ -88,6 +52,7 @@ function PedidoEnviado({ zona, entrega, onNuevoPedido }) {
 export default function Carrito() {
   const { cartList, setQty, totalPrice, clearCart } = useCart()
   const { products } = useProducts()
+  const { zonas } = useZonas()
   const [pedidoEnviado, setPedidoEnviado] = useState(false)
   const [zonaEnviada, setZonaEnviada]     = useState('')
   const [entregaEnviada, setEntregaEnviada] = useState(null)
@@ -101,10 +66,10 @@ export default function Carrito() {
   })
   const [errors, setErrors] = useState({})
 
-  const zonaSeleccionada = ZONAS.find((z) => z.id === form.zona)
+  const zonaSeleccionada = zonas.find((z) => String(z.id) === form.zona)
   const costoServicio    = zonaSeleccionada?.costo ?? null
   const totalEstimado    = costoServicio !== null ? totalPrice + costoServicio : null
-  const entrega          = form.zona ? proximaEntrega(form.zona) : null
+  const entrega          = zonaSeleccionada ? calcularProximaEntrega(zonaSeleccionada) : null
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -152,7 +117,7 @@ export default function Carrito() {
     })
 
     const entregaTexto = entrega
-      ? `Proxima entrega: ${entrega.nombre} ${entrega.fecha}, 12:00-18:00`
+      ? `Proxima entrega: ${entrega.diaNombre} ${entrega.diaNum} de ${entrega.mes}, ${horarioATexto(zonaSeleccionada)}`
       : 'Entrega a coordinar'
 
     const partes = [
@@ -161,7 +126,7 @@ export default function Carrito() {
       '',
       ...lineas,
       '',
-      `🚚 Servicio (${zonaSeleccionada.label}): $${formatPrice(costoServicio)}`,
+      `🚚 Servicio (${zonaSeleccionada.nombre}): $${formatPrice(costoServicio)}`,
       `💰 *TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
       '',
       '⚠️ El total es estimativo. El valor final se calculara segun el peso real de los productos.',
@@ -169,7 +134,7 @@ export default function Carrito() {
       '📋 DATOS DE ENTREGA',
       `👤 Nombre: ${form.nombre}`,
       `📍 Direccion: ${form.direccion}`,
-      `🗺️ Zona: ${zonaSeleccionada.label}`,
+      `🗺️ Zona: ${zonaSeleccionada.nombre}`,
       `📱 Celular: ${form.celular}`,
       `💳 Medio de pago: ${form.medio_pago}`,
     ]
@@ -181,8 +146,8 @@ export default function Carrito() {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`
     window.open(url, '_blank')
 
-    setZonaEnviada(zonaSeleccionada.label)
-    setEntregaEnviada(entrega)
+    setZonaEnviada(zonaSeleccionada.nombre)
+    setEntregaEnviada(entrega ? { ...entrega, horario: horarioATexto(zonaSeleccionada) } : null)
     clearCart()
     setPedidoEnviado(true)
   }
@@ -312,9 +277,9 @@ export default function Carrito() {
             <select name="zona" value={form.zona} onChange={handleChange}
               className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${errors.zona ? 'border-crate bg-crate/5' : 'border-line bg-white'}`}>
               <option value="">Seleccioná tu zona...</option>
-              {ZONAS.map((z) => (
+              {zonas.map((z) => (
                 <option key={z.id} value={z.id} disabled={!z.disponible}>
-                  {z.label}{z.disponible ? ` — $${formatPrice(z.costo)}` : ''}
+                  {z.nombre}{z.disponible ? ` — $${formatPrice(z.costo)}` : ' (próximamente)'}
                 </option>
               ))}
             </select>
@@ -322,10 +287,11 @@ export default function Carrito() {
             {entrega && (
               <div className="rounded-lg border border-crate/30 bg-crate/5 px-4 py-3 flex flex-col gap-1">
                 <p className="text-sm font-bold text-crate">
-                  📅 Próxima entrega: {entrega.nombre} {entrega.fecha} · 12:00–18:00
+                  📅 Próxima entrega: {entrega.diaNombre} {entrega.diaNum} de {entrega.mes}
+                  {horarioATexto(zonaSeleccionada) ? ` · ${horarioATexto(zonaSeleccionada)}` : ''}
                 </p>
                 <p className="text-xs text-charcoal/70">
-                  ⏰ Los pedidos se toman hasta las 20:00 hs del día anterior.
+                  ⏰ Los pedidos se toman hasta las {entrega.horaCorte} hs del {entrega.diaCierreNombre}.
                 </p>
               </div>
             )}
@@ -366,7 +332,7 @@ export default function Carrito() {
           <span>${formatPrice(totalPrice)}</span>
         </div>
         <div className="mt-1 flex justify-between text-sm text-charcoal/70">
-          <span>Servicio de abastecimiento{zonaSeleccionada ? ` · ${zonaSeleccionada.label}` : ''}</span>
+          <span>Servicio de abastecimiento{zonaSeleccionada ? ` · ${zonaSeleccionada.nombre}` : ''}</span>
           <span>{costoServicio !== null ? `$${formatPrice(costoServicio)}` : '—'}</span>
         </div>
         <div className="mt-3 flex justify-between border-t border-line pt-3">

@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import Hero from '../components/Hero.jsx'
 import ProductCarousel from '../components/ProductCarousel.jsx'
 import PackCard from '../components/PackCard.jsx'
-import { deliveryZones } from '../data/catalog.js'
 import { usePacks } from '../hooks/usePacks.js'
 import { useProducts } from '../hooks/useProducts.js'
+import { useZonas } from '../hooks/useZonas.js'
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR')
@@ -14,6 +14,7 @@ function formatPrice(n) {
 export default function Home() {
   const { products, loading }         = useProducts()
   const { packs, loading: loadingPacks } = usePacks()
+  const { zonas, loading: loadingZonas } = useZonas()
   const destacados = products.filter((p) => p.featured)
   const masPedidos = products.filter((p) => p.masPedido)
 
@@ -88,30 +89,32 @@ export default function Home() {
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="section-title">¿Llegamos hasta tu casa?</h2>
           <p className="mt-2 text-sm text-charcoal/70">
-            Repartimos en motocarro los martes, jueves y viernes de 12:00 a 18:00.
+            Repartimos en motocarro — mirá los días y horarios de tu zona.
           </p>
-          <div className="mt-8 divide-y divide-line overflow-hidden rounded-card border border-line bg-white text-left shadow-soft">
-            {deliveryZones.map((z) => (
-              <div key={z.zone} className="flex items-center justify-between gap-3 px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <span aria-hidden className={z.disponible ? 'text-leaf' : 'text-charcoal/30'}>📍</span>
-                  <div>
-                    <p className={`text-sm font-medium ${z.disponible ? 'text-charcoal' : 'text-charcoal/40'}`}>
-                      {z.zone}
-                    </p>
-                    {!z.disponible && (
-                      <p className="text-xs text-charcoal/40">Próximamente</p>
-                    )}
+          {!loadingZonas && (
+            <div className="mt-8 divide-y divide-line overflow-hidden rounded-card border border-line bg-white text-left shadow-soft">
+              {zonas.map((z) => (
+                <div key={z.id} className="flex items-center justify-between gap-3 px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <span aria-hidden className={z.disponible ? 'text-leaf' : 'text-charcoal/30'}>📍</span>
+                    <div>
+                      <p className={`text-sm font-medium ${z.disponible ? 'text-charcoal' : 'text-charcoal/40'}`}>
+                        {z.nombre}
+                      </p>
+                      {!z.disponible && (
+                        <p className="text-xs text-charcoal/40">Próximamente</p>
+                      )}
+                    </div>
                   </div>
+                  {z.disponible ? (
+                    <span className="text-sm font-semibold text-leaf">${formatPrice(z.costo)}</span>
+                  ) : (
+                    <span className="rounded-full bg-creamDark px-3 py-1 text-xs text-charcoal/40">Próximamente</span>
+                  )}
                 </div>
-                {z.disponible ? (
-                  <span className="text-sm font-semibold text-leaf">${formatPrice(z.costo)}</span>
-                ) : (
-                  <span className="rounded-full bg-creamDark px-3 py-1 text-xs text-charcoal/40">Próximamente</span>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
           <Link to="/zonas" className="btn-primary mt-8 inline-flex">
             Ver detalles de entrega
           </Link>

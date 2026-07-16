@@ -1,47 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import RouteMark from './RouteMark.jsx'
-
-const DIAS_ENTREGA = [2, 4, 5] // Martes, Jueves, Viernes
-const NOMBRES_DIA  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']
-const NOMBRES_MES  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
-const HORA_CORTE   = 20 // Pedidos hasta las 20hs del día anterior
-
-function calcularEstado() {
-  const ahora   = new Date()
-  const hoy     = ahora.getDay()
-  const horaAct = ahora.getHours() + ahora.getMinutes() / 60
-
-  for (let offset = 0; offset <= 7; offset++) {
-    const diaEntrega = (hoy + offset) % 7
-    if (!DIAS_ENTREGA.includes(diaEntrega)) continue
-
-    const fechaEntrega = new Date(ahora)
-    fechaEntrega.setDate(ahora.getDate() + offset)
-    fechaEntrega.setHours(12, 0, 0, 0)
-
-    // Cierre de pedidos: día anterior a las 20hs
-    const fechaCierre = new Date(fechaEntrega)
-    fechaCierre.setDate(fechaEntrega.getDate() - 1)
-    fechaCierre.setHours(HORA_CORTE, 0, 0, 0)
-
-    const ahoraMs  = ahora.getTime()
-    const cierreMs = fechaCierre.getTime()
-
-    // Si el cierre ya pasó, buscar el siguiente día de entrega
-    if (ahoraMs >= cierreMs) continue
-
-    return {
-      diaNombre:       NOMBRES_DIA[diaEntrega],
-      diaNum:          fechaEntrega.getDate(),
-      mes:             NOMBRES_MES[fechaEntrega.getMonth()],
-      diaCierreNombre: NOMBRES_DIA[fechaCierre.getDay()], // día del cierre (anterior a la entrega)
-      fechaCierre,
-      abierto:         true,
-    }
-  }
-  return null
-}
+import { useZonas } from '../hooks/useZonas.js'
+import { proximaEntregaGlobal } from '../lib/entrega.js'
 
 function formatCountdown(ms) {
   if (ms <= 0) return null
@@ -66,12 +27,14 @@ function CountdownBox({ value, label }) {
 }
 
 export default function Hero() {
+  const { zonas, loading: loadingZonas } = useZonas()
   const [estado, setEstado]     = useState(null)
   const [countdown, setCountdown] = useState(null)
 
   useEffect(() => {
+    if (loadingZonas) return
     function actualizar() {
-      const e = calcularEstado()
+      const e = proximaEntregaGlobal(zonas)
       setEstado(e)
       if (!e) { setCountdown(null); return }
       const resta = e.fechaCierre - new Date()
@@ -80,7 +43,7 @@ export default function Hero() {
     actualizar()
     const interval = setInterval(actualizar, 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [zonas, loadingZonas])
 
   return (
     <section className="relative overflow-hidden border-b border-line bg-leaf">
@@ -106,34 +69,24 @@ export default function Hero() {
           <RouteMark className="mt-6 h-10 w-full max-w-sm" />
 
           {/* Card de entrega — solo mobile */}
-          {estado && countdown && (
+          {!loadingZonas && estado && countdown && (
             <div className="mt-5 rounded-card bg-cream px-4 py-3 shadow-soft md:hidden">
-              {countdown ? (
-                <>
-                  <p className="font-tag text-xs text-crate font-semibold uppercase tracking-wide">
-                    Pedidos abiertos
-                  </p>
-                  <p className="mt-0.5 font-display text-sm font-semibold text-charcoal">
-                    Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
-                  </p>
-                  <p className="font-tag text-xs text-charcoal/50 mb-2">
-                    Cierre de pedidos el {estado.diaCierreNombre} a las {HORA_CORTE}:00 hs
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <CountdownBox value={countdown.horas}    label="hs" />
-                    <span className="font-bold text-crate text-xl">:</span>
-                    <CountdownBox value={countdown.minutos}  label="min" />
-                    <span className="font-bold text-crate text-xl">:</span>
-                    <CountdownBox value={countdown.segundos} label="seg" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="font-tag text-xs text-charcoal/50 uppercase tracking-wide">Pedidos cerrados</p>
-                  <p className="font-display text-sm font-semibold text-leaf">Próxima entrega disponible</p>
-                  <p className="font-tag text-xs text-charcoal/60">Martes, Jueves y Viernes · 12:00–18:00</p>
-                </>
-              )}
+              <p className="font-tag text-xs text-crate font-semibold uppercase tracking-wide">
+                Pedidos abiertos
+              </p>
+              <p className="mt-0.5 font-display text-sm font-semibold text-charcoal">
+                Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
+              </p>
+              <p className="font-tag text-xs text-charcoal/50 mb-2">
+                Cierre de pedidos el {estado.diaCierreNombre} a las {estado.horaCorte} hs
+              </p>
+              <div className="flex items-center gap-1">
+                <CountdownBox value={countdown.horas}    label="hs" />
+                <span className="font-bold text-crate text-xl">:</span>
+                <CountdownBox value={countdown.minutos}  label="min" />
+                <span className="font-bold text-crate text-xl">:</span>
+                <CountdownBox value={countdown.segundos} label="seg" />
+              </div>
             </div>
           )}
 
@@ -154,40 +107,42 @@ export default function Hero() {
             />
           </div>
 
-          <div className="absolute -bottom-6 -left-6 rounded-card bg-cream px-5 py-4 shadow-soft min-w-[240px]">
-            {estado && countdown ? (
-              <>
-                <p className="font-tag text-xs text-crate font-semibold uppercase tracking-wide">
-                  Pedidos abiertos
-                </p>
-                <p className="mt-0.5 font-display text-base font-semibold text-charcoal">
-                  Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
-                </p>
-                <p className="font-tag text-xs text-charcoal/50 mb-2">
-                  Cierre de pedidos el {estado.diaCierreNombre} a las {HORA_CORTE}:00 hs
-                </p>
-                <div className="flex items-center gap-1">
-                  <CountdownBox value={countdown.horas}    label="hs" />
-                  <span className="font-bold text-crate text-xl">:</span>
-                  <CountdownBox value={countdown.minutos}  label="min" />
-                  <span className="font-bold text-crate text-xl">:</span>
-                  <CountdownBox value={countdown.segundos} label="seg" />
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="font-tag text-xs text-charcoal/50 uppercase tracking-wide">
-                  Pedidos cerrados
-                </p>
-                <p className="mt-1 font-display text-base font-semibold text-leaf">
-                  Próxima entrega disponible
-                </p>
-                <p className="font-tag text-xs text-charcoal/60 mt-0.5">
-                  Martes, Jueves y Viernes · 12:00–18:00
-                </p>
-              </>
-            )}
-          </div>
+          {!loadingZonas && (
+            <div className="absolute -bottom-6 -left-6 rounded-card bg-cream px-5 py-4 shadow-soft min-w-[240px]">
+              {estado && countdown ? (
+                <>
+                  <p className="font-tag text-xs text-crate font-semibold uppercase tracking-wide">
+                    Pedidos abiertos
+                  </p>
+                  <p className="mt-0.5 font-display text-base font-semibold text-charcoal">
+                    Entrega el {estado.diaNombre} {estado.diaNum} de {estado.mes}
+                  </p>
+                  <p className="font-tag text-xs text-charcoal/50 mb-2">
+                    Cierre de pedidos el {estado.diaCierreNombre} a las {estado.horaCorte} hs
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <CountdownBox value={countdown.horas}    label="hs" />
+                    <span className="font-bold text-crate text-xl">:</span>
+                    <CountdownBox value={countdown.minutos}  label="min" />
+                    <span className="font-bold text-crate text-xl">:</span>
+                    <CountdownBox value={countdown.segundos} label="seg" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="font-tag text-xs text-charcoal/50 uppercase tracking-wide">
+                    Pedidos cerrados
+                  </p>
+                  <p className="mt-1 font-display text-base font-semibold text-leaf">
+                    Próxima entrega disponible pronto
+                  </p>
+                  <p className="font-tag text-xs text-charcoal/60 mt-0.5">
+                    Consultá tu zona para ver días y horarios
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </section>

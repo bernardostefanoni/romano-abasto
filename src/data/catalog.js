@@ -36,9 +36,3 @@ export const packs = [
     img: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?q=80&w=800&auto=format&fit=crop',
   },
 ]
-
-export const deliveryZones = [
-  { zone: 'San Miguel de Tucumán', days: 'Martes, jueves y viernes', time: '12:00–18:00', costo: 3500, disponible: true },
-  { zone: 'Alderetes',             days: 'Martes, jueves y viernes', time: '12:00–18:00', costo: 2000, disponible: true },
-  { zone: 'Yerba Buena',           days: 'Próximamente',             time: '',            costo: null,  disponible: false },
-]
