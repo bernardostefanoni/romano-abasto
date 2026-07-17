@@ -37,7 +37,10 @@ export function useProducts() {
         const normalized = data.map((p) => ({
           id:             p.id,
           name:           p.nombre,
+          producto:       p.producto || p.nombre,
+          variante:       p.variante || '',
           category:       normalizarCategoria(p.categoria),
+          categoriaRaw:   p.categoria,
           unit:           p.unidad_display || p.unidad,
           precio_por:     p.unidad_display || p.unidad,
           unidad_display: p.unidad_display || p.unidad,
@@ -49,6 +52,25 @@ export function useProducts() {
           img:            p.imagen_url || defaultImage(p.categoria),
         }))
 
+        // Agrupar variantes del mismo producto dentro de la misma categoría
+        // (ej: "Pastafrola x10cm" / "x16cm") en una sola card con selector.
+        // Se agrupa por categoría además de por producto para no mezclar
+        // casos como "Papa" suelta (Frutas y verduras) con "Papa bolsa 20kg"
+        // (Bolsas y cajones) — son formas de compra distintas, no tamaños.
+        const grupos = new Map()
+        normalized.forEach((item) => {
+          const key = `${item.categoriaRaw}::${item.producto}`
+          if (!grupos.has(key)) grupos.set(key, [])
+          grupos.get(key).push(item)
+        })
+
+        const agrupados = Array.from(grupos.values()).map((variantes) => {
+          if (variantes.length === 1) return { ...variantes[0], variants: variantes }
+          variantes.sort((a, b) => a.price - b.price)
+          const principal = variantes.find((v) => v.featured) || variantes[0]
+          return { ...principal, name: principal.producto, variants: variantes }
+        })
+
         const catMap = {}
         data.forEach((p) => {
           const id = normalizarCategoria(p.categoria)
@@ -57,7 +79,7 @@ export function useProducts() {
           }
         })
 
-        setProducts(normalized)
+        setProducts(agrupados)
         setCategories(Object.values(catMap))
       } catch (err) {
         setError(err.message)

@@ -7,16 +7,24 @@ function formatPrice(n) {
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart()
-  const paso    = product.paso || 1
-  const esPorKg = paso === 0.5 && !product.pesoVariable  // 0.5 real de kg (no zapallo)
+
+  // Si el producto tiene más de una variante (ej: "Pastafrola" x10cm/x16cm),
+  // se muestra un selector y todo lo demás (precio, foto, stepper, carrito)
+  // sigue a la variante elegida. Si no, se comporta como una card normal.
+  const variantes = product.variants && product.variants.length > 1 ? product.variants : null
+  const [activeIdx, setActiveIdx] = useState(0)
+  const activo = variantes ? variantes[activeIdx] : product
+
+  const paso    = activo.paso || 1
+  const esPorKg = paso === 0.5 && !activo.pesoVariable  // 0.5 real de kg (no zapallo)
 
   // Etiqueta de unidad que muestra el sync (kg, atado, u, x30, etc.)
-  const unidadLabel = product.unidad_display || product.unidad || ''
+  const unidadLabel = activo.unidad_display || activo.unidad || ''
 
   // Para bolsas cerradas (ej. "Papa bolsa 20kg"), mostramos el precio por kg
   // como referencia para comparar contra el producto suelto y la competencia.
-  const kgMatch = unidadLabel === 'bolsa' ? product.name.match(/(\d+(?:[.,]\d+)?)\s*kg/i) : null
-  const precioPorKg = kgMatch ? product.price / parseFloat(kgMatch[1].replace(',', '.')) : null
+  const kgMatch = unidadLabel === 'bolsa' ? activo.name.match(/(\d+(?:[.,]\d+)?)\s*kg/i) : null
+  const precioPorKg = kgMatch ? activo.price / parseFloat(kgMatch[1].replace(',', '.')) : null
 
   // Texto de la cantidad en el stepper:
   //  - kg          -> "0.5 kg"
@@ -24,12 +32,17 @@ export default function ProductCard({ product }) {
   //  - entero      -> "1"
   function qtyTexto(q) {
     if (esPorKg) return `${q} kg`
-    if (product.pesoVariable) return `${q} ${unidadLabel || 'u'}`
+    if (activo.pesoVariable) return `${q} ${unidadLabel || 'u'}`
     return q
   }
 
   const [qty, setQty]         = useState(paso)
   const [agregado, setAgregado] = useState(false)
+
+  function seleccionarVariante(idx) {
+    setActiveIdx(idx)
+    setQty(variantes[idx].paso || 1)
+  }
 
   function aumentar() {
     setQty((q) => Math.round((q + paso) * 100) / 100)
@@ -40,7 +53,7 @@ export default function ProductCard({ product }) {
   }
 
   function handleAgregar() {
-    addToCart(product, qty)
+    addToCart(activo, qty)
     setAgregado(true)
     setTimeout(() => setAgregado(false), 1500)
   }
@@ -54,7 +67,7 @@ export default function ProductCard({ product }) {
       )}
       <div className="aspect-square w-full overflow-hidden bg-creamDark">
         <img
-          src={product.img}
+          src={activo.img}
           alt={product.name}
           className="h-full w-full object-cover"
           loading="lazy"
@@ -64,14 +77,34 @@ export default function ProductCard({ product }) {
         <h3 className="font-display text-base font-semibold leading-snug text-charcoal">
           {product.name}
         </h3>
+
+        {variantes && (
+          <div className="flex flex-wrap gap-1.5">
+            {variantes.map((v, idx) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => seleccionarVariante(idx)}
+                className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                  idx === activeIdx
+                    ? 'border-leaf bg-leaf text-cream'
+                    : 'border-line bg-white text-charcoal hover:border-leaf/50'
+                }`}
+              >
+                {v.variante || v.name}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-baseline gap-1">
-          <span className="tag-price text-lg font-bold">${formatPrice(product.price)}</span>
+          <span className="tag-price text-lg font-bold">${formatPrice(activo.price)}</span>
           {unidadLabel && <span className="text-xs text-charcoal/50">/ {unidadLabel}</span>}
         </div>
         {precioPorKg && (
           <p className="text-[11px] text-charcoal/50">${formatPrice(precioPorKg)}/kg</p>
         )}
-        {product.pesoVariable && (
+        {activo.pesoVariable && (
           <p className="text-[11px] leading-tight text-mustard font-medium">
             Precio estimado · se ajusta al peso real
           </p>
