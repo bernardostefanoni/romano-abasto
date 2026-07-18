@@ -106,7 +106,7 @@ export default function Carrito() {
       else if (product.pesoVariable) qtyStr = `${qty} ${product.unidad_display || product.unit || 'u'} (aprox)`
       else qtyStr = `x${qty}`
 
-      lineas.push(`> ${product.name} ${qtyStr} — $${formatPrice(product.price * qty)}`)
+      lineas.push(`> ${product.name} ${qtyStr} — $${formatPrice(product.price * qty)} (#${product.id})`)
 
       // Si es un pack, agregar el desglose de componentes
       if (product.isPack && Array.isArray(product.components) && product.components.length > 0) {
