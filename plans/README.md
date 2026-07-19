@@ -4,11 +4,11 @@ Generados por `improve-animations` sobre el commit `20540d3`.
 
 | # | Plan | Severidad | Categoría | Status |
 | --- | --- | --- | --- | --- |
-| 001 | [Reemplazar `transition-all` por `transition-colors` en botones "Agregar"](001-fix-transition-all-agregar-buttons.md) | MEDIUM | Performance / Cohesión | TODO |
-| 002 | [Animar la entrada/salida del menú mobile](002-mobile-menu-entrance.md) | MEDIUM | Physicality / Missed opportunity | TODO |
-| 003 | [Animar el desplegable de ingredientes del pack](003-pack-ingredient-list-reveal.md) | LOW-MEDIUM | Missed opportunity / Physicality | TODO |
-| 004 | [Feedback visual en el badge del carrito](004-cart-badge-pop-feedback.md) | LOW | Missed opportunity (delight) | TODO |
-| 005 | [Fade-in al terminar de cargar productos/packs](005-loading-state-fade-in.md) | LOW | Missed opportunity | TODO |
+| 001 | [Reemplazar `transition-all` por `transition-colors` en botones "Agregar"](001-fix-transition-all-agregar-buttons.md) | MEDIUM | Performance / Cohesión | DONE |
+| 002 | [Animar la entrada/salida del menú mobile](002-mobile-menu-entrance.md) | MEDIUM | Physicality / Missed opportunity | DONE |
+| 003 | [Animar el desplegable de ingredientes del pack](003-pack-ingredient-list-reveal.md) | LOW-MEDIUM | Missed opportunity / Physicality | DONE |
+| 004 | [Feedback visual en el badge del carrito](004-cart-badge-pop-feedback.md) | LOW | Missed opportunity (delight) | DONE |
+| 005 | [Fade-in al terminar de cargar productos/packs](005-loading-state-fade-in.md) | LOW | Missed opportunity | DONE |
 
 ## Orden de ejecución recomendado
 
