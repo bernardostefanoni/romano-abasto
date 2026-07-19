@@ -38,7 +38,7 @@ export default function PackDetail() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <div className="content-fade-in mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <nav className="mb-6 text-xs text-charcoal/50">
         <Link to="/" className="hover:text-crate transition-colors">Inicio</Link>
         <span className="mx-1">›</span>

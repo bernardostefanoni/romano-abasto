@@ -56,7 +56,7 @@ export default function Productos() {
           No se pudieron cargar los productos. Intentá de nuevo más tarde.
         </div>
       ) : (
-        <>
+        <div className="content-fade-in">
           <div className="mb-8 flex flex-wrap gap-2">
             {categories.map((c) => (
               <button
@@ -92,7 +92,7 @@ export default function Productos() {
               No encontramos productos con ese nombre en esta categoría.
             </p>
           )}
-        </>
+        </div>
       )}
     </div>
   )

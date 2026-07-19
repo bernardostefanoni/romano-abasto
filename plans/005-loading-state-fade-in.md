@@ -1,6 +1,6 @@
 # 005 — Fade-in suave al terminar de cargar productos y packs
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 20540d3
 - **Severity**: LOW
 - **Category**: Missed opportunity
