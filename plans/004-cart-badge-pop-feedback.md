@@ -1,6 +1,6 @@
 # 004 — Agregar feedback visual al badge del carrito cuando cambia
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 20540d3
 - **Severity**: LOW
 - **Category**: Missed opportunity (delight)

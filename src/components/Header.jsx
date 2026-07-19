@@ -54,7 +54,10 @@ export default function Header() {
             <span aria-hidden>🧺</span>
             <span className="hidden sm:inline">Carrito</span>
             {totalItems > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-crate text-[11px] font-bold text-cream">
+              <span
+                key={totalItems}
+                className="cart-badge absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-crate text-[11px] font-bold text-cream"
+              >
                 {totalItems}
               </span>
             )}
