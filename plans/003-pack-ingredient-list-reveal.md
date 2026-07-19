@@ -1,6 +1,6 @@
 # 003 — Animar el desplegable de ingredientes del pack
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 20540d3
 - **Severity**: LOW-MEDIUM
 - **Category**: Missed opportunity / Physicality

@@ -58,6 +58,18 @@
       transform: translateY(-8px);
     }
   }
+
+  .pack-reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 200ms var(--ease-out);
+  }
+  .pack-reveal.is-open {
+    grid-template-rows: 1fr;
+  }
+  .pack-reveal > div {
+    overflow: hidden;
+  }
 }
 
 /* Scrollbar discreta para carruseles */

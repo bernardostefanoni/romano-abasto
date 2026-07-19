@@ -52,28 +52,30 @@ export default function PackCard({ pack }) {
               {expanded ? 'Ocultar' : `Ver ${components.length} productos`}
             </button>
 
-            {expanded && (
-              <ul className="mt-3 space-y-1.5 rounded-lg bg-creamDark/50 p-3 max-h-56 overflow-y-auto">
-                {components.map((c, i) => (
-                  <li key={i} className="flex items-center justify-between gap-2 text-xs">
-                    <div className="flex items-baseline gap-1.5 min-w-0">
-                      <span className="font-tag font-bold text-leaf shrink-0">
-                        {c.cantidad}
-                      </span>
-                      <span className="text-[10px] text-charcoal/40 shrink-0">
-                        {c.unidad}
-                      </span>
-                      <span className="text-charcoal truncate">{c.sku}</span>
-                    </div>
-                    {c.precio_unit > 0 && (
-                      <span className="tag-price text-xs whitespace-nowrap">
-                        ${formatPrice(Math.round(c.precio_unit * c.cantidad))}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <div className={`pack-reveal ${expanded ? 'is-open' : ''}`}>
+              <div>
+                <ul className="mt-3 space-y-1.5 rounded-lg bg-creamDark/50 p-3 max-h-56 overflow-y-auto">
+                  {components.map((c, i) => (
+                    <li key={i} className="flex items-center justify-between gap-2 text-xs">
+                      <div className="flex items-baseline gap-1.5 min-w-0">
+                        <span className="font-tag font-bold text-leaf shrink-0">
+                          {c.cantidad}
+                        </span>
+                        <span className="text-[10px] text-charcoal/40 shrink-0">
+                          {c.unidad}
+                        </span>
+                        <span className="text-charcoal truncate">{c.sku}</span>
+                      </div>
+                      {c.precio_unit > 0 && (
+                        <span className="tag-price text-xs whitespace-nowrap">
+                          ${formatPrice(Math.round(c.precio_unit * c.cantidad))}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         )}
 
