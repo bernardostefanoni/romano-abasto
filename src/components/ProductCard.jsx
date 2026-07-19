@@ -132,7 +132,7 @@ export default function ProductCard({ product }) {
           {/* Botón agregar al carrito */}
           <button
             onClick={handleAgregar}
-            className={`w-full rounded-full px-3 py-2 text-xs font-semibold text-cream transition-all sm:w-auto ${
+            className={`w-full rounded-full px-3 py-2 text-xs font-semibold text-cream transition-colors sm:w-auto ${
               agregado
                 ? 'bg-mustard'
                 : 'bg-leaf hover:bg-leafLight'

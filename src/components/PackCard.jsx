@@ -80,7 +80,7 @@ export default function PackCard({ pack }) {
         <div className="mt-auto flex items-center gap-2 pt-2">
           <button
             onClick={handleAgregar}
-            className={`flex-1 rounded-full px-4 py-2.5 text-sm font-semibold text-cream transition-all ${
+            className={`flex-1 rounded-full px-4 py-2.5 text-sm font-semibold text-cream transition-colors ${
               agregado ? 'bg-mustard' : 'bg-leaf hover:bg-leafLight'
             }`}
           >

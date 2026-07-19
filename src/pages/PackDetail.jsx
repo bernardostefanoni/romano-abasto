@@ -84,7 +84,7 @@ export default function PackDetail() {
           <div className="mt-8 flex flex-wrap gap-3">
             <button
               onClick={handleAgregar}
-              className={`rounded-full px-6 py-3 text-sm font-semibold text-cream transition-all ${
+              className={`rounded-full px-6 py-3 text-sm font-semibold text-cream transition-colors ${
                 agregado ? 'bg-mustard' : 'bg-crate hover:bg-crateDark'
               }`}
             >
