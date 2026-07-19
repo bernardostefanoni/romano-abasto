@@ -1,6 +1,6 @@
 # 002 — Animar la entrada/salida del menú mobile
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 20540d3
 - **Severity**: MEDIUM
 - **Category**: Physicality & Missed opportunity

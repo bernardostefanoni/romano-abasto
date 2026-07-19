@@ -73,27 +73,25 @@ export default function Header() {
       </div>
 
       {/* Menú mobile */}
-      {open && (
-        <div className="border-t border-line bg-cream px-4 pb-4 md:hidden">
-          <nav className="flex flex-col gap-3 pt-3">
-            {navLinks.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `text-sm font-medium ${isActive ? 'text-crate' : 'text-charcoal'}`
-                }
-              >
-                {l.label}
-              </NavLink>
-            ))}
-            <Link to="/zonas" className="btn-primary mt-1 w-full" onClick={() => setOpen(false)}>
-              Pedir ahora
-            </Link>
-          </nav>
-        </div>
-      )}
+      <div className="mobile-menu border-t border-line bg-cream px-4 pb-4 md:hidden" data-open={open}>
+        <nav className="flex flex-col gap-3 pt-3">
+          {navLinks.map((l) => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              onClick={() => setOpen(false)}
+              className={({ isActive }) =>
+                `text-sm font-medium ${isActive ? 'text-crate' : 'text-charcoal'}`
+              }
+            >
+              {l.label}
+            </NavLink>
+          ))}
+          <Link to="/zonas" className="btn-primary mt-1 w-full" onClick={() => setOpen(false)}>
+            Pedir ahora
+          </Link>
+        </nav>
+      </div>
     </header>
   )
 }

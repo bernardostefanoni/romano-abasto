@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
 @layer base {
   h1, h2, h3 {
     font-family: 'Fraunces', serif;
@@ -33,6 +37,26 @@
 
   .stepper-btn {
     @apply flex h-8 w-8 items-center justify-center rounded-full border border-line text-leaf transition-colors hover:bg-creamDark;
+  }
+
+  .mobile-menu {
+    transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out), display 200ms allow-discrete;
+  }
+  .mobile-menu[data-open='true'] {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .mobile-menu:not([data-open='true']) {
+    display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  @starting-style {
+    .mobile-menu[data-open='true'] {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
   }
 }
 
