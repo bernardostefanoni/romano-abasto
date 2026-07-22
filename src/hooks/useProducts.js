@@ -48,7 +48,7 @@ export function useProducts() {
           featured:       p.destacado,
           masPedido:      p.mas_pedido,
           pesoVariable:   p.peso_variable || false,
-          pesoReferenciaKg: p.peso_referencia_kg ? Number(p.peso_referencia_kg) : null,
+          pesoAproximadoKg: p.peso_aproximado_kg ? Number(p.peso_aproximado_kg) : null,
           paso:           Number(p.paso) || 1,
           img:            p.imagen_url || defaultImage(p.categoria),
         }))

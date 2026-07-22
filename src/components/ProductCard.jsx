@@ -109,9 +109,9 @@ export default function ProductCard({ product }) {
             Precio estimado · se ajusta al peso real
           </p>
         )}
-        {!activo.pesoVariable && activo.pesoReferenciaKg && (
+        {!activo.pesoVariable && activo.pesoAproximadoKg && (
           <p className="text-[11px] leading-tight text-charcoal/50">
-            Peso aproximado: ~{activo.pesoReferenciaKg} kg
+            Peso aproximado: ~{activo.pesoAproximadoKg} kg
           </p>
         )}
 
