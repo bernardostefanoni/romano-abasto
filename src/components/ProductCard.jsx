@@ -109,6 +109,11 @@ export default function ProductCard({ product }) {
             Precio estimado · se ajusta al peso real
           </p>
         )}
+        {!activo.pesoVariable && activo.pesoReferenciaKg && (
+          <p className="text-[11px] leading-tight text-charcoal/50">
+            Peso aproximado: ~{activo.pesoReferenciaKg} kg
+          </p>
+        )}
 
         {/* En mobile se apilan (stepper arriba, botón abajo). Desde sm van en fila. */}
         <div className="mt-auto flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
