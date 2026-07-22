@@ -16,10 +16,10 @@ export default function ProductCard({ product }) {
   const activo = variantes ? variantes[activeIdx] : product
 
   const paso    = activo.paso || 1
-  const esPorKg = paso === 0.5 && !activo.pesoVariable  // 0.5 real de kg (no zapallo)
 
   // Etiqueta de unidad que muestra el sync (kg, atado, u, x30, etc.)
   const unidadLabel = activo.unidad_display || activo.unidad || ''
+  const esPorKg = unidadLabel === 'kg'
 
   // Para bolsas cerradas (ej. "Papa bolsa 20kg"), mostramos el precio por kg
   // como referencia para comparar contra el producto suelto y la competencia.
@@ -28,11 +28,11 @@ export default function ProductCard({ product }) {
 
   // Texto de la cantidad en el stepper:
   //  - kg          -> "0.5 kg"
-  //  - peso variable-> "0.5 u" (permite medio, pero se pide por unidad)
+  //  - medio paso  -> "0.5 atado" / "0.5 u" (peso variable, atados, etc.)
   //  - entero      -> "1"
   function qtyTexto(q) {
     if (esPorKg) return `${q} kg`
-    if (activo.pesoVariable) return `${q} ${unidadLabel || 'u'}`
+    if (paso === 0.5) return `${q} ${unidadLabel || 'u'}`
     return q
   }
 
