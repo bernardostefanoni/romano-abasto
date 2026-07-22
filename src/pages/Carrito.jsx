@@ -98,12 +98,12 @@ export default function Carrito() {
 
     const lineas = []
     cartList.forEach(({ product, qty }) => {
-      const paso    = Number(product.paso) || 1
-      const esPorKg = paso <= 0.5 && !product.pesoVariable
+      const unidadLabel = product.unidad_display || product.unit || 'u'
+      const esPorKg = unidadLabel === 'kg'
       // kg -> "1 kg" ; peso variable -> "1 u (aprox)" ; entero -> "x1"
       let qtyStr
       if (esPorKg) qtyStr = `${qty} kg`
-      else if (product.pesoVariable) qtyStr = `${qty} ${product.unidad_display || product.unit || 'u'} (aprox)`
+      else if (product.pesoVariable) qtyStr = `${qty} ${unidadLabel} (aprox)`
       else qtyStr = `x${qty}`
 
       lineas.push(`> ${product.name} ${qtyStr} — $${formatPrice(product.price * qty)} (#${product.id})`)
@@ -187,9 +187,8 @@ export default function Carrito() {
       {/* Lista de productos */}
       <div className="mt-6 divide-y divide-line rounded-card border border-line bg-white shadow-soft">
         {cartList.map(({ product, qty }) => {
-          const paso    = product.paso || 1
-          const esPorKg = paso === 0.5 && !product.pesoVariable
           const unidadLabel = product.unidad_display || product.unit || 'u'
+          const esPorKg = unidadLabel === 'kg'
           const qtyTxt  = esPorKg
             ? `${qty} kg`
             : (product.pesoVariable ? `${qty} ${unidadLabel}` : qty)
