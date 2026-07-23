@@ -110,9 +110,14 @@ export default function ProductCard({ product }) {
           </p>
         )}
         {!activo.pesoVariable && activo.pesoAproximadoKg && (
-          <p className="text-[11px] leading-tight text-charcoal/50">
-            Peso aproximado: ~{activo.pesoAproximadoKg} kg
-          </p>
+          <>
+            <p className="text-[11px] leading-tight text-charcoal/50">
+              Peso aproximado: ~{activo.pesoAproximadoKg} kg
+            </p>
+            <p className="text-[11px] leading-tight text-charcoal/50">
+              ${formatPrice(activo.price / activo.pesoAproximadoKg)}/kg aprox.
+            </p>
+          </>
         )}
 
         {/* En mobile se apilan (stepper arriba, botón abajo). Desde sm van en fila. */}
