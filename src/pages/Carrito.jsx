@@ -66,10 +66,11 @@ export default function Carrito() {
   })
   const [errors, setErrors] = useState({})
 
-  const zonaSeleccionada = zonas.find((z) => String(z.id) === form.zona)
-  const costoServicio    = zonaSeleccionada?.costo ?? null
-  const totalEstimado    = costoServicio !== null ? totalPrice + costoServicio : null
-  const entrega          = zonaSeleccionada ? calcularProximaEntrega(zonaSeleccionada) : null
+  const zonaSeleccionada  = zonas.find((z) => String(z.id) === form.zona)
+  const costoServicio     = zonaSeleccionada?.costo ?? null
+  const subtotalProductos = form.medio_pago === 'Transferencia bancaria' ? totalPrice * 1.02 : totalPrice
+  const totalEstimado     = costoServicio !== null ? subtotalProductos + costoServicio : null
+  const entrega           = zonaSeleccionada ? calcularProximaEntrega(zonaSeleccionada) : null
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -328,7 +329,7 @@ export default function Carrito() {
       <div className="mt-6 rounded-card border border-line bg-creamDark p-4">
         <div className="flex justify-between text-sm text-charcoal/70">
           <span>Subtotal productos</span>
-          <span>${formatPrice(totalPrice)}</span>
+          <span>${formatPrice(subtotalProductos)}</span>
         </div>
         <div className="mt-1 flex justify-between text-sm text-charcoal/70">
           <span>Servicio de abastecimiento{zonaSeleccionada ? ` · ${zonaSeleccionada.nombre}` : ''}</span>
