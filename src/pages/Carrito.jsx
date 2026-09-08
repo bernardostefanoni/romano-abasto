@@ -129,7 +129,7 @@ export default function Carrito() {
       `🚚 Servicio (${zonaSeleccionada.nombre}): $${formatPrice(costoServicio)}`,
       `💰 *TOTAL ESTIMADO: $${formatPrice(totalEstimado)}*`,
       '',
-      '⚠️ El total es estimativo. El valor final se calculara segun el peso real de los productos.',
+      '⚠️ El total es estimativo: los precios pueden variar segun el valor del Mercofrut al momento de la compra, y tambien se ajusta segun el peso real de los productos.',
       '',
       '📋 DATOS DE ENTREGA',
       `👤 Nombre: ${form.nombre}`,
@@ -346,7 +346,7 @@ export default function Carrito() {
           </p>
         )}
         <p className="mt-2 text-xs text-charcoal/50">
-          El total informado es estimativo. El valor final se calculará según el peso real de los productos al momento de preparar el pedido.
+          El total informado es estimativo: los precios pueden variar según el valor del Mercofrut al momento de la compra, y el valor final también se ajusta según el peso real de los productos al preparar el pedido.
         </p>
       </div>
 
