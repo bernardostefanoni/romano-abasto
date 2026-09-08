@@ -305,6 +305,7 @@ export default function Carrito() {
               {MEDIOS_PAGO.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
             {errors.medio_pago && <span className="text-xs text-crate">{errors.medio_pago}</span>}
+            <span className="text-xs text-charcoal/50">Transferencia bancaria tiene un recargo del 2%.</span>
           </div>
 
           <div className="flex flex-col gap-1 sm:col-span-2">
