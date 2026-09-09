@@ -10,6 +10,8 @@ const WHATSAPP_NUMBER = '5493814571329'
 
 const MEDIOS_PAGO = ['Transferencia bancaria', 'Efectivo']
 
+const PEDIDO_MINIMO = 10000
+
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
@@ -84,6 +86,8 @@ export default function Carrito() {
     if (!form.celular.trim())   e.celular    = 'Ingresá el celular de quien recibe'
     if (!form.zona)             e.zona       = 'Seleccioná tu zona de entrega'
     if (!form.medio_pago)       e.medio_pago = 'Seleccioná un medio de pago'
+    if (subtotalProductos < PEDIDO_MINIMO)
+      e.minimo = `El pedido mínimo es de $${formatPrice(PEDIDO_MINIMO)}. Te faltan $${formatPrice(PEDIDO_MINIMO - subtotalProductos)}.`
     return e
   }
 
@@ -347,12 +351,20 @@ export default function Carrito() {
             Seleccioná tu zona para ver el total con el costo de envío.
           </p>
         )}
+        {subtotalProductos < PEDIDO_MINIMO && (
+          <p className="mt-2 text-xs text-crate font-medium">
+            Te faltan ${formatPrice(PEDIDO_MINIMO - subtotalProductos)} para llegar al pedido mínimo de ${formatPrice(PEDIDO_MINIMO)}.
+          </p>
+        )}
         <p className="mt-2 text-xs text-charcoal/50">
           El total informado es estimativo: los precios pueden variar según el valor del Mercofrut al momento de la compra, y el valor final también se ajusta según el peso real de los productos al preparar el pedido.
         </p>
       </div>
 
       {/* Botón WhatsApp */}
+      {errors.minimo && (
+        <p className="mt-4 text-sm font-medium text-crate">{errors.minimo}</p>
+      )}
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link to="/productos" className="text-sm text-charcoal/60 hover:text-leaf">
           Seguir comprando
