@@ -10,6 +10,7 @@ const WHATSAPP_NUMBER = '5493814571329'
 // casos — el resto usa la unidad de venta normal (atado, ristra, kg, etc.).
 const UNIDAD_MERCOFRUT = {
   'Banana paraguaya':         'cajón',
+  'Banana Ecuador':           'cajón',
   'Batata roja':              'bolsa',
   'Berenjena':                'bolsa',
   'Brócoli':                  'par',
