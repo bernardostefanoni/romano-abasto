@@ -1,15 +1,66 @@
-import React from 'react'
+import React, { useState } from 'react'
 import RouteMark from '../components/RouteMark.jsx'
+import { useProducts } from '../hooks/useProducts.js'
 
 const WHATSAPP_NUMBER = '5493814571329'
 
-const mensajeConsulta = encodeURIComponent(
-  '🚛 Hola! Quiero consultar por el servicio de flete para compras mayoristas por bulto/cajón.'
-)
-
 export default function Flete() {
+  const { products, loading } = useProducts()
+  const [cantidades, setCantidades] = useState({})
+  const [form, setForm] = useState({ nombre: '', celular: '', direccion: '', nota: '' })
+  const [errors, setErrors] = useState({})
+
+  const seleccionados = products.filter((p) => (cantidades[p.id] || 0) > 0)
+
+  function cambiarCantidad(id, delta) {
+    setCantidades((prev) => ({
+      ...prev,
+      [id]: Math.max(0, (prev[id] || 0) + delta),
+    }))
+  }
+
+  function handleChange(e) {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    setErrors((prev) => ({ ...prev, [e.target.name]: '' }))
+  }
+
+  function validar() {
+    const e = {}
+    if (!form.nombre.trim())    e.nombre    = 'Ingresá tu nombre'
+    if (!form.celular.trim())   e.celular   = 'Ingresá tu celular'
+    if (!form.direccion.trim()) e.direccion = 'Ingresá el local o dirección de entrega'
+    if (seleccionados.length === 0) e.productos = 'Elegí al menos un producto'
+    return e
+  }
+
+  function enviarPorWhatsApp() {
+    const errs = validar()
+    if (Object.keys(errs).length > 0) { setErrors(errs); return }
+
+    const lineas = seleccionados.map(
+      (p) => `> ${p.name} — ${cantidades[p.id]} bulto/cajón`
+    )
+
+    const partes = [
+      '🚛 PEDIDO DE FLETE - Romano Abasto',
+      '(Compra mayorista por bulto/cajón — a cotizar)',
+      '',
+      ...lineas,
+      '',
+      '📋 DATOS',
+      `👤 Nombre: ${form.nombre}`,
+      `📱 Celular: ${form.celular}`,
+      `📍 Local / dirección de entrega: ${form.direccion}`,
+    ]
+    if (form.nota.trim()) partes.push(`📝 Nota: ${form.nota}`)
+    partes.push('', '⚠️ El precio se cotiza aparte: precio Mercofrut del día + changarín + flete.')
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`
+    window.open(url, '_blank')
+  }
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
       <span className="rounded-full bg-leaf px-3 py-1 text-xs font-semibold text-cream">
         Servicio aparte · Para gastronómicos y compras grandes
       </span>
@@ -60,28 +111,110 @@ export default function Flete() {
         </p>
       </div>
 
-      <div className="mt-8 rounded-card border border-leaf/20 bg-leaf/5 p-5">
-        <h2 className="font-display text-lg font-semibold text-leaf flex items-center gap-2">
-          <span>📋</span> ¿Para quién es?
-        </h2>
-        <p className="mt-2 text-sm text-charcoal/75">
-          Restaurantes, rotiserías, verdulerías u otros locales que necesiten comprar fruta y
-          verdura en cantidad, para uno o varios puntos de entrega. El pedido se arma a medida,
-          así que te pedimos que nos escribas para cotizarlo.
+      {/* Selector de productos */}
+      <div className="mt-10">
+        <h2 className="font-display text-xl font-semibold text-charcoal">Armá tu pedido</h2>
+        <p className="mt-1 text-sm text-charcoal/60">
+          Elegí los productos y cuántos bultos o cajones de cada uno — el precio te lo
+          cotizamos por WhatsApp según el día.
         </p>
+
+        {loading ? (
+          <div className="mt-6 py-10 text-center text-sm text-charcoal/50">Cargando productos...</div>
+        ) : (
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {products.map((p) => {
+              const cant = cantidades[p.id] || 0
+              return (
+                <div
+                  key={p.id}
+                  className={`flex flex-col overflow-hidden rounded-card border bg-white shadow-soft ${
+                    cant > 0 ? 'border-leaf' : 'border-line'
+                  }`}
+                >
+                  <div className="aspect-square w-full overflow-hidden bg-creamDark">
+                    <img src={p.img} alt={p.name} className="h-full w-full object-cover" loading="lazy" />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2 p-3">
+                    <p className="font-display text-sm font-semibold leading-snug text-charcoal">{p.name}</p>
+                    <div className="mt-auto flex items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        className="stepper-btn"
+                        onClick={() => cambiarCantidad(p.id, -1)}
+                        aria-label="Quitar"
+                      >−</button>
+                      <span className="w-8 text-center text-sm font-semibold">{cant}</span>
+                      <button
+                        type="button"
+                        className="stepper-btn"
+                        onClick={() => cambiarCantidad(p.id, 1)}
+                        aria-label="Agregar"
+                      >+</button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+        {errors.productos && <p className="mt-3 text-sm text-crate">{errors.productos}</p>}
       </div>
 
-      <a
-        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${mensajeConsulta}`}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-8 flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white shadow-soft transition-opacity hover:opacity-90 sm:inline-flex"
+      {/* Resumen de lo elegido */}
+      {seleccionados.length > 0 && (
+        <div className="mt-6 rounded-card border border-leaf/30 bg-leaf/5 p-4">
+          <p className="text-sm font-semibold text-charcoal">Pedido armado:</p>
+          <ul className="mt-2 space-y-1 text-sm text-charcoal/75">
+            {seleccionados.map((p) => (
+              <li key={p.id}>• {p.name} — {cantidades[p.id]} bulto/cajón</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Datos de contacto */}
+      <div className="mt-8">
+        <h2 className="font-display text-xl font-semibold text-charcoal">Tus datos</h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-charcoal">Nombre completo <span className="text-crate">*</span></label>
+            <input name="nombre" value={form.nombre} onChange={handleChange} placeholder="Juan Pérez"
+              className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${errors.nombre ? 'border-crate bg-crate/5' : 'border-line bg-white'}`} />
+            {errors.nombre && <span className="text-xs text-crate">{errors.nombre}</span>}
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-charcoal">Celular <span className="text-crate">*</span></label>
+            <input name="celular" value={form.celular} onChange={handleChange} placeholder="381 4xx xxxx"
+              className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${errors.celular ? 'border-crate bg-crate/5' : 'border-line bg-white'}`} />
+            {errors.celular && <span className="text-xs text-crate">{errors.celular}</span>}
+          </div>
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <label className="text-sm font-medium text-charcoal">Local / dirección de entrega <span className="text-crate">*</span></label>
+            <input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Nombre del local y dirección (si son varios, contanos en la nota)"
+              className={`rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf ${errors.direccion ? 'border-crate bg-crate/5' : 'border-line bg-white'}`} />
+            {errors.direccion && <span className="text-xs text-crate">{errors.direccion}</span>}
+          </div>
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <label className="text-sm font-medium text-charcoal">
+              Nota <span className="font-normal text-charcoal/40">(opcional)</span>
+            </label>
+            <textarea name="nota" value={form.nota} onChange={handleChange}
+              placeholder="Ej: varios locales, frecuencia, algo puntual del pedido..." rows={3}
+              className="resize-none rounded-xl border border-line bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-leaf" />
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={enviarPorWhatsApp}
+        className="mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white shadow-soft transition-opacity hover:opacity-90 sm:w-auto"
       >
         <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
         </svg>
-        Consultar por WhatsApp
-      </a>
+        Enviar pedido por WhatsApp
+      </button>
     </div>
   )
 }
