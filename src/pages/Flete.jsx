@@ -4,11 +4,44 @@ import { useProducts } from '../hooks/useProducts.js'
 
 const WHATSAPP_NUMBER = '5493814571329'
 
+// Para el flete, varios productos NO se compran en el Mercofrut en la misma
+// unidad en la que se venden sueltos en la tienda (ej: la banana se vende
+// por kg, pero se compra por cajón). Este mapa pisa la unidad solo para esos
+// casos — el resto usa la unidad de venta normal (atado, ristra, kg, etc.).
+const UNIDAD_MERCOFRUT = {
+  'Banana paraguaya':         'cajón',
+  'Batata roja':              'bolsa',
+  'Berenjena':                'bolsa',
+  'Brócoli':                  'par',
+  'Cebolla selección':        'bolsa',
+  'Cebolla morada':           'bolsa',
+  'Choclo híbrido':           'bolsa',
+  'Kiwi':                     'cajón',
+  'Lechuga repollada':        'cajón',
+  'Limón':                    'cajón',
+  'Naranja criolla':          'cajón',
+  'Mandarina':                'bolsa',
+  'Manzana roja selección':   'cajón',
+  'Papa':                     'bolsa',
+  'Papin colorado':           'kg',
+  'Pera':                     'cajón',
+  'Pepino cajón':             'cajón',
+  'Pimiento rojo selección':  'cajón',
+  'Pimiento verde':           'cajón',
+  'Tomate cherry cajón':      'cajón',
+  'Tomate redondo cajón':     'cajón',
+  'Tomate redondo selección': 'cajón',
+  'Zanahoria':                'bolsa chica',
+  'Zapallito verde':          'cajón',
+  'Huevos color':             'cajón',
+  'Huevos blancos':           'cajón',
+}
+
 // Unidad real de venta del producto (atado, ristra, kg, planta, u, etc.) —
-// mismo dato que ya se usa en la tienda, en vez de asumir "bulto/cajón"
-// parejo para todo (varios productos ni tienen ese formato definido).
+// mismo dato que ya se usa en la tienda, salvo los casos de UNIDAD_MERCOFRUT
+// donde la compra mayorista es distinta a la venta al menudeo.
 function unidadFlete(p) {
-  return p.unit || p.unidad_display || 'u'
+  return UNIDAD_MERCOFRUT[p.name] || p.unit || p.unidad_display || 'u'
 }
 
 export default function Flete() {
