@@ -4,13 +4,23 @@ import { useProducts } from '../hooks/useProducts.js'
 
 const WHATSAPP_NUMBER = '5493814571329'
 
+// Unidad real de venta del producto (atado, ristra, kg, planta, u, etc.) —
+// mismo dato que ya se usa en la tienda, en vez de asumir "bulto/cajón"
+// parejo para todo (varios productos ni tienen ese formato definido).
+function unidadFlete(p) {
+  return p.unit || p.unidad_display || 'u'
+}
+
 export default function Flete() {
   const { products, loading } = useProducts()
   const [cantidades, setCantidades] = useState({})
   const [form, setForm] = useState({ nombre: '', celular: '', direccion: '', nota: '' })
   const [errors, setErrors] = useState({})
 
-  const seleccionados = products.filter((p) => (cantidades[p.id] || 0) > 0)
+  // Pastelería queda afuera: el flete es para compras de Mercofrut por
+  // bulto/cajón, no para productos de panadería/pastelería.
+  const productosFlete = products.filter((p) => p.category !== 'panaderia')
+  const seleccionados = productosFlete.filter((p) => (cantidades[p.id] || 0) > 0)
 
   function cambiarCantidad(id, delta) {
     setCantidades((prev) => ({
@@ -38,7 +48,7 @@ export default function Flete() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
 
     const lineas = seleccionados.map(
-      (p) => `> ${p.name} — ${cantidades[p.id]} bulto/cajón`
+      (p) => `> ${p.name} — ${cantidades[p.id]} ${unidadFlete(p)}`
     )
 
     const partes = [
@@ -115,15 +125,15 @@ export default function Flete() {
       <div className="mt-10">
         <h2 className="font-display text-xl font-semibold text-charcoal">Armá tu pedido</h2>
         <p className="mt-1 text-sm text-charcoal/60">
-          Elegí los productos y cuántos bultos o cajones de cada uno — el precio te lo
-          cotizamos por WhatsApp según el día.
+          Elegí los productos y cuántos de cada uno (atado, ristra, kg, cajón — según cómo se
+          vende cada uno) — el precio te lo cotizamos por WhatsApp según el día.
         </p>
 
         {loading ? (
           <div className="mt-6 py-10 text-center text-sm text-charcoal/50">Cargando productos...</div>
         ) : (
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {products.map((p) => {
+            {productosFlete.map((p) => {
               const cant = cantidades[p.id] || 0
               return (
                 <div
@@ -137,6 +147,7 @@ export default function Flete() {
                   </div>
                   <div className="flex flex-1 flex-col gap-2 p-3">
                     <p className="font-display text-sm font-semibold leading-snug text-charcoal">{p.name}</p>
+                    <p className="text-xs text-charcoal/50">por {unidadFlete(p)}</p>
                     <div className="mt-auto flex items-center justify-center gap-2">
                       <button
                         type="button"
@@ -167,7 +178,7 @@ export default function Flete() {
           <p className="text-sm font-semibold text-charcoal">Pedido armado:</p>
           <ul className="mt-2 space-y-1 text-sm text-charcoal/75">
             {seleccionados.map((p) => (
-              <li key={p.id}>• {p.name} — {cantidades[p.id]} bulto/cajón</li>
+              <li key={p.id}>• {p.name} — {cantidades[p.id]} {unidadFlete(p)}</li>
             ))}
           </ul>
         </div>
