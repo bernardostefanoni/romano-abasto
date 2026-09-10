@@ -23,7 +23,8 @@ export default function Flete() {
       </p>
       <p className="mt-3 text-charcoal/75">
         Esto es un servicio aparte de los pedidos normales de la web: ahí comprás por unidad o
-        kilo, con precio minorista y envío incluido. Acá comprás por bulto a precio mayorista, y
+        kilo, a un precio ya casi de Mercofrut (le agregamos un margen muy bajo) con el envío
+        incluido. Acá comprás por bulto entero, directo a precio Mercofrut sin ningún margen, y
         pagás aparte lo que efectivamente cuesta llevarlo hasta tu local.
       </p>
 
