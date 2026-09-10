@@ -70,8 +70,8 @@ export default function Home() {
               Trabajamos con locales gastronómicos con pedidos programados, precios mayoristas y
               reparto fijo en motocarro.
             </p>
-            <Link to="/packs" className="btn-primary mt-5 inline-flex">
-              Ver pack gastronómico
+            <Link to="/flete" className="btn-primary mt-5 inline-flex">
+              Conocer el servicio de flete
             </Link>
           </div>
           <div className="aspect-square w-44 shrink-0 overflow-hidden rounded-card shadow-soft sm:w-56">

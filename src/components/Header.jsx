@@ -7,6 +7,7 @@ const LOGO_URL = 'https://qjjmgjbgzsnppvxwghhv.supabase.co/storage/v1/object/pub
 const navLinks = [
   { to: '/productos',      label: 'Productos' },
   { to: '/packs',          label: 'Packs' },
+  { to: '/flete',          label: 'Flete mayorista' },
   { to: '/zonas',          label: 'Zonas de entrega' },
   { to: '/sobre-nosotros', label: 'Nosotros' },
 ]

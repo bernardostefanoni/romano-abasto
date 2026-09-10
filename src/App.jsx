@@ -10,6 +10,7 @@ import PackDetail from './pages/PackDetail.jsx'
 import Zonas from './pages/Zonas.jsx'
 import Carrito from './pages/Carrito.jsx'
 import SobreNosotros from './pages/SobreNosotros.jsx'
+import Flete from './pages/Flete.jsx'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/zonas" element={<Zonas />} />
             <Route path="/carrito" element={<Carrito />} />
             <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+            <Route path="/flete" element={<Flete />} />
           </Routes>
         </main>
         <Footer />
