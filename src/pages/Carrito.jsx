@@ -239,6 +239,12 @@ export default function Carrito() {
         })}
       </div>
 
+      {/* Aviso de disponibilidad: el catálogo no refleja stock en tiempo real del Mercofrut */}
+      <p className="mt-3 text-xs text-charcoal/50">
+        ⚠️ Alguno de los productos que elegiste podría no estar disponible al momento de preparar
+        tu pedido — en ese caso te contactamos para coordinar un reemplazo o ajustar el pedido.
+      </p>
+
       {/* Franja de confianza: reduce la duda de "y si llega mal" justo antes de pagar */}
       <div className="mt-3 flex items-center gap-2 rounded-full border border-leaf/20 bg-leaf/5 px-4 py-2 text-xs text-charcoal/70">
         <span aria-hidden>🛡️</span>
