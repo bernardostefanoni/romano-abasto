@@ -9,9 +9,23 @@ import ProductCard from '../components/ProductCard.jsx'
 // bolsas de 20kg en vez de en frutas y verduras.
 const CAT_POR_DEFECTO = 'frutas-verduras'
 
+// "Frutas y verduras" es una sola categoría en el sistema (así está armado en
+// el ERP), pero para no hacer buscar entre las verduras a quien solo quiere
+// fruta, se arma acá un sub-filtro rápido con los nombres de los productos
+// que son fruta.
+const FRUTAS = new Set([
+  'Banana Ecuador', 'Banana paraguaya', 'Ciruela', 'Ciruela cajón',
+  'Kiwi', 'Kiwi cajón', 'Limón', 'Limón cajón', 'Mandarina',
+  'Manzana roja selección', 'Naranja criolla', 'Palta Hass madura',
+  'Palta Hass madura cajón', 'Palta Hass verde', 'Palta Hass verde cajón',
+  'Pera', 'Pera cajón', 'Uva negra', 'Uva negra cajón',
+  'Uva rosa', 'Uva rosa cajón',
+])
+
 export default function Productos() {
   const { products, categories, loading, error } = useProducts()
   const [activeCat, setActiveCat] = useState(null)
+  const [soloFrutas, setSoloFrutas] = useState(false)
   const [query, setQuery] = useState('')
 
   // Seleccionar la categoría por defecto cuando carguen los datos.
@@ -21,13 +35,24 @@ export default function Productos() {
     categories.find((c) => c.id === CAT_POR_DEFECTO)?.id ||
     categories[0]?.id
 
+  function elegirCategoria(id) {
+    setActiveCat(id)
+    setSoloFrutas(false)
+  }
+
+  function elegirSoloFrutas() {
+    setActiveCat('frutas-verduras')
+    setSoloFrutas(true)
+  }
+
   const filtered = useMemo(() => {
     return products.filter((p) => {
       const matchesCat = !catActiva || p.category === catActiva
+      const matchesFruta = !soloFrutas || FRUTAS.has(p.name)
       const matchesQuery = p.name.toLowerCase().includes(query.toLowerCase())
-      return matchesCat && (query ? matchesQuery : true)
+      return matchesCat && matchesFruta && (query ? matchesQuery : true)
     })
-  }, [products, catActiva, query])
+  }, [products, catActiva, soloFrutas, query])
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -59,18 +84,32 @@ export default function Productos() {
         <div className="content-fade-in">
           <div className="mb-8 flex flex-wrap gap-2">
             {categories.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setActiveCat(c.id)}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                  catActiva === c.id
-                    ? 'border-leaf bg-leaf text-cream'
-                    : 'border-line bg-white text-charcoal hover:border-leaf/50'
-                }`}
-              >
-                <span className="mr-1.5">{c.icon}</span>
-                {c.name}
-              </button>
+              <React.Fragment key={c.id}>
+                <button
+                  onClick={() => elegirCategoria(c.id)}
+                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                    catActiva === c.id && !soloFrutas
+                      ? 'border-leaf bg-leaf text-cream'
+                      : 'border-line bg-white text-charcoal hover:border-leaf/50'
+                  }`}
+                >
+                  <span className="mr-1.5">{c.icon}</span>
+                  {c.name}
+                </button>
+                {c.id === 'frutas-verduras' && (
+                  <button
+                    onClick={elegirSoloFrutas}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                      soloFrutas
+                        ? 'border-leaf bg-leaf text-cream'
+                        : 'border-line bg-white text-charcoal hover:border-leaf/50'
+                    }`}
+                  >
+                    <span className="mr-1.5">🍎</span>
+                    Frutas
+                  </button>
+                )}
+              </React.Fragment>
             ))}
             <Link
               to="/packs"
