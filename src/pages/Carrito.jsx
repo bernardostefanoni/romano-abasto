@@ -10,7 +10,7 @@ const WHATSAPP_NUMBER = '5493814571329'
 
 const MEDIOS_PAGO = ['Transferencia bancaria', 'Efectivo']
 
-const PEDIDO_MINIMO = 10000
+const PEDIDO_MINIMO = 20000
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
