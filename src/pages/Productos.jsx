@@ -120,9 +120,14 @@ export default function Productos() {
             </Link>
           </div>
 
-          <p className="mb-6 text-xs text-charcoal/50">
-            El total informado es estimativo: los precios pueden variar según el valor del Mercofrut al momento de la compra, y el valor final también se ajusta según el peso real de los productos al preparar el pedido.
-          </p>
+          <div className="mb-6 flex items-start gap-2 rounded-xl border border-mustard/40 bg-mustard/10 px-4 py-3 text-sm font-medium text-charcoal">
+            <span aria-hidden className="text-base leading-none">💲</span>
+            <span>
+              El total informado es estimativo: los precios pueden variar según el valor del
+              Mercofrut al momento de la compra, y el valor final también se ajusta según el peso
+              real de los productos al preparar el pedido.
+            </span>
+          </div>
 
           {filtered.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
