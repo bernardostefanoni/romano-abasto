@@ -12,6 +12,14 @@ export default function PackCard({ pack }) {
   const { addPackToCart } = useCart()
   const components = pack.components || []
 
+  // Cuánto costarían los mismos productos comprados sueltos, para mostrar
+  // el ahorro real de elegir el pack en vez de calcularlo el cliente a mano.
+  const subtotalSuelto = components.reduce(
+    (sum, c) => sum + (c.precio_unit || 0) * (c.cantidad || 0), 0
+  )
+  const ahorro = subtotalSuelto - pack.price
+  const ahorroPct = subtotalSuelto > 0 ? (ahorro / subtotalSuelto) * 100 : 0
+
   function handleAgregar() {
     addPackToCart(pack, 1)
     setAgregado(true)
@@ -38,6 +46,11 @@ export default function PackCard({ pack }) {
             ${formatPrice(pack.price)}
           </span>
         </div>
+        {ahorro > 1 && (
+          <p className="text-xs font-semibold text-leaf">
+            Ahorrás ${formatPrice(Math.round(ahorro))} ({ahorroPct.toFixed(0)}%) vs. comprar suelto
+          </p>
+        )}
         {pack.desc && (
           <p className="text-sm text-charcoal/70 line-clamp-2">{pack.desc}</p>
         )}

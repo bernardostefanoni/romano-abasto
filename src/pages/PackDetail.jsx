@@ -13,6 +13,11 @@ export default function PackDetail() {
   const { addPackToCart } = useCart()
   const [agregado, setAgregado] = useState(false)
   const pack = packs.find((p) => String(p.id) === String(packId))
+  const subtotalSuelto = pack
+    ? (pack.components || []).reduce((sum, c) => sum + (c.precio_unit || 0) * (c.cantidad || 0), 0)
+    : 0
+  const ahorro = subtotalSuelto - (pack?.price || 0)
+  const ahorroPct = subtotalSuelto > 0 ? (ahorro / subtotalSuelto) * 100 : 0
 
   function handleAgregar() {
     addPackToCart(pack, 1)
@@ -55,6 +60,11 @@ export default function PackDetail() {
         <div>
           <h1 className="font-display text-3xl font-bold text-charcoal">{pack.name}</h1>
           <p className="tag-price mt-2 text-3xl font-bold">${formatPrice(pack.price)}</p>
+          {ahorro > 1 && (
+            <p className="mt-1 text-sm font-semibold text-leaf">
+              Ahorrás ${formatPrice(Math.round(ahorro))} ({ahorroPct.toFixed(0)}%) vs. comprar suelto
+            </p>
+          )}
           {pack.desc && <p className="mt-4 text-charcoal/75">{pack.desc}</p>}
 
           {pack.components.length > 0 && (
