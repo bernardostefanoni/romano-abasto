@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useProducts } from '../hooks/useProducts.js'
+import { usePacks } from '../hooks/usePacks.js'
 import ProductCard from '../components/ProductCard.jsx'
+import PackCard from '../components/PackCard.jsx'
 
 // Categoría que se muestra seleccionada al entrar a /productos.
 // Se fija a mano (y no "la primera de la lista") porque la lista viene ordenada
@@ -24,6 +26,7 @@ const FRUTAS = new Set([
 
 export default function Productos() {
   const { products, categories, loading, error } = useProducts()
+  const { packs } = usePacks()
   const [activeCat, setActiveCat] = useState(null)
   const [soloFrutas, setSoloFrutas] = useState(false)
   const [query, setQuery] = useState('')
@@ -128,6 +131,19 @@ export default function Productos() {
               real de los productos al preparar el pedido.
             </span>
           </div>
+
+          {/* Packs a la vista sin tener que salir de esta página — en mobile
+              mucha gente no llega a explorar otras secciones. */}
+          {packs.length > 0 && (
+            <div className="mb-8">
+              <h2 className="section-title mb-4 flex items-center gap-2">
+                <span aria-hidden>📦</span> Packs armados
+              </h2>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {packs.map((p) => <PackCard key={p.id} pack={p} />)}
+              </div>
+            </div>
+          )}
 
           {filtered.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
