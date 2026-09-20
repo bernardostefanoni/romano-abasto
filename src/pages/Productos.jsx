@@ -139,7 +139,7 @@ export default function Productos() {
               <h2 className="section-title mb-4 flex items-center gap-2">
                 <span aria-hidden>📦</span> Packs armados
               </h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {packs.map((p) => <PackCard key={p.id} pack={p} />)}
               </div>
             </div>
