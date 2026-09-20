@@ -14,7 +14,7 @@ const CAT_POR_DEFECTO = 'frutas-verduras'
 // fruta, se arma acá un sub-filtro rápido con los nombres de los productos
 // que son fruta.
 const FRUTAS = new Set([
-  'Banana Ecuador', 'Banana paraguaya', 'Ciruela', 'Ciruela cajón',
+  'Banana Ecuador', 'Banana paraguaya', 'Banana boliviana', 'Ciruela', 'Ciruela cajón',
   'Kiwi', 'Kiwi cajón', 'Limón', 'Limón cajón', 'Mandarina',
   'Manzana roja selección', 'Naranja criolla', 'Palta Hass madura',
   'Palta Hass madura cajón', 'Palta Hass verde', 'Palta Hass verde cajón',
