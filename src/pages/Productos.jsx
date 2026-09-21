@@ -133,8 +133,10 @@ export default function Productos() {
           </div>
 
           {/* Packs a la vista sin tener que salir de esta página — en mobile
-              mucha gente no llega a explorar otras secciones. */}
-          {packs.length > 0 && (
+              mucha gente no llega a explorar otras secciones. Solo en la
+              categoría por defecto: no tiene sentido mostrar packs de fruta
+              y verdura al mirar, por ejemplo, productos de limpieza. */}
+          {packs.length > 0 && catActiva === 'frutas-verduras' && !soloFrutas && (
             <div className="mb-8">
               <h2 className="section-title mb-4 flex items-center gap-2">
                 <span aria-hidden>📦</span> Packs armados
