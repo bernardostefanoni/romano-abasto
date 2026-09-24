@@ -46,7 +46,7 @@ export default function PackCard({ pack }) {
             ${formatPrice(pack.price)}
           </span>
         </div>
-        {ahorro > 1 && (
+        {ahorroPct >= 5 && (
           <p className="text-xs font-semibold text-leaf">
             Ahorrás ${formatPrice(Math.round(ahorro))} ({ahorroPct.toFixed(0)}%) vs. comprar suelto
           </p>

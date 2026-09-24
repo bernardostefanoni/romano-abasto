@@ -60,7 +60,7 @@ export default function PackDetail() {
         <div>
           <h1 className="font-display text-3xl font-bold text-charcoal">{pack.name}</h1>
           <p className="tag-price mt-2 text-3xl font-bold">${formatPrice(pack.price)}</p>
-          {ahorro > 1 && (
+          {ahorroPct >= 5 && (
             <p className="mt-1 text-sm font-semibold text-leaf">
               Ahorrás ${formatPrice(Math.round(ahorro))} ({ahorroPct.toFixed(0)}%) vs. comprar suelto
             </p>
