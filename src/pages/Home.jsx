@@ -56,34 +56,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Banner gastronómico */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <div className="flex flex-col items-center gap-6 rounded-card bg-sage/25 p-8 sm:flex-row sm:p-10">
-          <div className="flex-1">
-            <span className="rounded-full bg-leaf px-3 py-1 text-xs font-semibold text-cream">
-              Para tu negocio
-            </span>
-            <h3 className="mt-3 font-display text-2xl font-semibold text-charcoal">
-              Abastecé tu cocina con entregas recurrentes
-            </h3>
-            <p className="mt-2 max-w-md text-sm text-charcoal/70">
-              Trabajamos con locales gastronómicos con pedidos programados, precios mayoristas y
-              reparto fijo en motocarro.
-            </p>
-            <Link to="/flete" className="btn-primary mt-5 inline-flex">
-              Conocer el servicio de flete
-            </Link>
-          </div>
-          <div className="aspect-square w-44 shrink-0 overflow-hidden rounded-card shadow-soft sm:w-56">
-            <img
-              src="https://images.unsplash.com/photo-1466637574441-749b8f19452f?q=80&w=600&auto=format&fit=crop"
-              alt="Verduras frescas en canasto"
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
-      </section>
-
       {/* Zonas de entrega */}
       <section className="bg-mustard/15 py-14">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
