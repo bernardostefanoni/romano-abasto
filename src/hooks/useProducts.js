@@ -49,6 +49,7 @@ export function useProducts() {
           masPedido:      p.mas_pedido,
           pesoVariable:   p.peso_variable || false,
           pesoAproximadoKg: p.peso_aproximado_kg ? Number(p.peso_aproximado_kg) : null,
+          descripcion:    p.descripcion || '',
           paso:           Number(p.paso) || 1,
           img:            p.imagen_url || defaultImage(p.categoria),
         }))

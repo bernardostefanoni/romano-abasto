@@ -101,6 +101,9 @@ export default function ProductCard({ product }) {
           <span className="tag-price text-lg font-bold">${formatPrice(activo.price)}</span>
           {unidadLabel && <span className="text-xs text-charcoal/50">/ {unidadLabel}</span>}
         </div>
+        {activo.descripcion && (
+          <p className="text-xs leading-snug text-charcoal/70">{activo.descripcion}</p>
+        )}
         {precioPorKg && (
           <p className="text-[11px] text-charcoal/50">${formatPrice(precioPorKg)}/kg</p>
         )}
