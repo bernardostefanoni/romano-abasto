@@ -134,10 +134,10 @@ export default function Productos() {
             ))}
             <button
               onClick={elegirDescuentos}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
                 soloDescuento
                   ? 'border-crate bg-crate text-cream'
-                  : 'border-line bg-white text-charcoal hover:border-crate/50'
+                  : 'animate-pulse border-crate bg-crate text-cream shadow-soft hover:animate-none'
               }`}
             >
               <span className="mr-1.5">🔥</span>
