@@ -45,6 +45,7 @@ export function useProducts() {
           precio_por:     p.unidad_display || p.unidad,
           unidad_display: p.unidad_display || p.unidad,
           price:          Number(p.precio),
+          precioAntes:    p.precio_antes ? Number(p.precio_antes) : null,
           featured:       p.destacado,
           masPedido:      p.mas_pedido,
           pesoVariable:   p.peso_variable || false,

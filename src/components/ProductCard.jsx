@@ -15,7 +15,8 @@ export default function ProductCard({ product }) {
   const [activeIdx, setActiveIdx] = useState(0)
   const activo = variantes ? variantes[activeIdx] : product
 
-  const paso    = activo.paso || 1
+  const paso = activo.paso || 1
+  const tieneDescuento = activo.precioAntes && activo.precioAntes > activo.price
 
   // Etiqueta de unidad que muestra el sync (kg, atado, u, x30, etc.)
   const unidadLabel = activo.unidad_display || activo.unidad || ''
@@ -61,8 +62,13 @@ export default function ProductCard({ product }) {
   return (
     <div className="crate-card flex w-full shrink-0 snap-start flex-col overflow-hidden sm:w-auto relative">
       {product.featured && (
-        <span className="absolute m-2 rounded-full bg-mustard px-2.5 py-1 text-[11px] font-semibold text-charcoal z-10">
+        <span className="absolute left-0 top-0 m-2 rounded-full bg-mustard px-2.5 py-1 text-[11px] font-semibold text-charcoal z-10">
           Destacado
+        </span>
+      )}
+      {tieneDescuento && (
+        <span className="absolute right-0 top-0 m-2 animate-pulse rounded-full bg-crate px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-cream shadow-soft z-10">
+          Descuento
         </span>
       )}
       <div className="aspect-square w-full overflow-hidden bg-creamDark">
@@ -97,8 +103,13 @@ export default function ProductCard({ product }) {
           </div>
         )}
 
-        <div className="flex items-baseline gap-1">
-          <span className="tag-price text-lg font-bold">${formatPrice(activo.price)}</span>
+        <div className="flex items-baseline gap-1.5">
+          {tieneDescuento && (
+            <span className="text-sm text-charcoal/40 line-through">${formatPrice(activo.precioAntes)}</span>
+          )}
+          <span className={`tag-price text-lg font-bold ${tieneDescuento ? 'text-crate' : ''}`}>
+            ${formatPrice(activo.price)}
+          </span>
           {unidadLabel && <span className="text-xs text-charcoal/50">/ {unidadLabel}</span>}
         </div>
         {activo.descripcion && (
