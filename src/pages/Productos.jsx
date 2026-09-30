@@ -24,11 +24,20 @@ const FRUTAS = new Set([
   'Uva rosa', 'Uva rosa cajón',
 ])
 
+// Un producto "tiene descuento" si su variante principal o cualquiera de
+// sus variantes tiene precio de antes (cargado como descuento del SKU en
+// el ERP) mayor al precio actual.
+function tieneDescuento(p) {
+  if (p.precioAntes && p.precioAntes > p.price) return true
+  return (p.variants || []).some((v) => v.precioAntes && v.precioAntes > v.price)
+}
+
 export default function Productos() {
   const { products, categories, loading, error } = useProducts()
   const { packs } = usePacks()
   const [activeCat, setActiveCat] = useState(null)
   const [soloFrutas, setSoloFrutas] = useState(false)
+  const [soloDescuento, setSoloDescuento] = useState(false)
   const [query, setQuery] = useState('')
 
   // Seleccionar la categoría por defecto cuando carguen los datos.
@@ -41,21 +50,30 @@ export default function Productos() {
   function elegirCategoria(id) {
     setActiveCat(id)
     setSoloFrutas(false)
+    setSoloDescuento(false)
   }
 
   function elegirSoloFrutas() {
     setActiveCat('frutas-verduras')
     setSoloFrutas(true)
+    setSoloDescuento(false)
+  }
+
+  // "Descuentos" no es una categoría: muestra los productos en oferta de
+  // cualquier categoría, así que ignora el filtro de categoría/frutas.
+  function elegirDescuentos() {
+    setSoloDescuento(true)
   }
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
+      const matchesQuery = p.name.toLowerCase().includes(query.toLowerCase())
+      if (soloDescuento) return tieneDescuento(p) && (query ? matchesQuery : true)
       const matchesCat = !catActiva || p.category === catActiva
       const matchesFruta = !soloFrutas || FRUTAS.has(p.name)
-      const matchesQuery = p.name.toLowerCase().includes(query.toLowerCase())
       return matchesCat && matchesFruta && (query ? matchesQuery : true)
     })
-  }, [products, catActiva, soloFrutas, query])
+  }, [products, catActiva, soloFrutas, soloDescuento, query])
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -91,7 +109,7 @@ export default function Productos() {
                 <button
                   onClick={() => elegirCategoria(c.id)}
                   className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                    catActiva === c.id && !soloFrutas
+                    catActiva === c.id && !soloFrutas && !soloDescuento
                       ? 'border-leaf bg-leaf text-cream'
                       : 'border-line bg-white text-charcoal hover:border-leaf/50'
                   }`}
@@ -114,6 +132,17 @@ export default function Productos() {
                 )}
               </React.Fragment>
             ))}
+            <button
+              onClick={elegirDescuentos}
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                soloDescuento
+                  ? 'border-crate bg-crate text-cream'
+                  : 'border-line bg-white text-charcoal hover:border-crate/50'
+              }`}
+            >
+              <span className="mr-1.5">🔥</span>
+              Descuentos
+            </button>
             <Link
               to="/packs"
               className="rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-charcoal transition-colors hover:border-leaf/50"
@@ -136,7 +165,7 @@ export default function Productos() {
               mucha gente no llega a explorar otras secciones. Solo en la
               categoría por defecto: no tiene sentido mostrar packs de fruta
               y verdura al mirar, por ejemplo, productos de limpieza. */}
-          {packs.length > 0 && catActiva === 'frutas-verduras' && !soloFrutas && (
+          {packs.length > 0 && catActiva === 'frutas-verduras' && !soloFrutas && !soloDescuento && (
             <div className="mb-8">
               <h2 className="section-title mb-4 flex items-center gap-2">
                 <span aria-hidden>📦</span> Packs armados
