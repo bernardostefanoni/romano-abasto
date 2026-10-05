@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useZonas } from '../hooks/useZonas.js'
 import { diasATexto, horarioATexto } from '../lib/entrega.js'
 
@@ -8,16 +8,6 @@ function formatPrice(n) {
 
 export default function Zonas() {
   const { zonas, loading } = useZonas()
-  const [search, setSearch] = useState('')
-  const [result, setResult] = useState(null)
-
-  function checkZone(e) {
-    e.preventDefault()
-    const found = zonas.find(
-      (z) => z.disponible && z.nombre.toLowerCase().includes(search.toLowerCase())
-    )
-    setResult(found || 'not-found')
-  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
@@ -33,33 +23,11 @@ export default function Zonas() {
           ¿Llegamos a tu domicilio?
         </h1>
         <p className="mt-2 text-sm text-charcoal/70">
-          Verificá si hacemos entregas en tu zona de Tucumán.
+          Si tu dirección está dentro de alguna de estas zonas, te llevamos el pedido hasta la puerta de tu casa.
         </p>
       </div>
 
-      <form onSubmit={checkZone} className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Escribí tu barrio o zona..."
-          className="flex-1 rounded-full border border-line bg-white px-5 py-3 text-sm outline-none focus:border-leaf"
-        />
-        <button type="submit" className="btn-primary">Comprobar</button>
-      </form>
-
-      {result && result !== 'not-found' && (
-        <div className="mt-5 rounded-card border border-leaf/30 bg-leaf/5 p-4 text-sm text-leaf">
-          Llegamos a <strong>{result.nombre}</strong> los días <strong>{diasATexto(result.dias)}</strong>,
-          de <strong>{horarioATexto(result)}</strong>. Costo del servicio: <strong>${formatPrice(result.costo)}</strong>.
-        </div>
-      )}
-      {result === 'not-found' && (
-        <div className="mt-5 rounded-card border border-crate/30 bg-crate/5 p-4 text-sm text-crateDark">
-          Todavía no llegamos a esa zona, pero estamos sumando barrios. Escribinos para avisarte cuando lleguemos.
-        </div>
-      )}
-
-      <h2 className="mt-12 mb-4 font-display text-xl font-semibold text-charcoal">
+      <h2 className="mt-10 mb-4 font-display text-xl font-semibold text-charcoal">
         Zonas de entrega
       </h2>
       {loading ? (
