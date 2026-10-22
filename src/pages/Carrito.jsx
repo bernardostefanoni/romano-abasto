@@ -67,6 +67,7 @@ export default function Carrito() {
     nombre: '', direccion: '', celular: '', zona: '', medio_pago: '', nota: '',
   })
   const [errors, setErrors] = useState({})
+  const [limiteError, setLimiteError] = useState('')
 
   const zonaSeleccionada  = zonas.find((z) => String(z.id) === form.zona)
   const costoServicio     = zonaSeleccionada?.costo ?? null
@@ -94,7 +95,11 @@ export default function Carrito() {
   function cambiarQty(product, qty, delta) {
     const paso = product.paso || 1
     const next = Math.max(0, Math.round((qty + delta * paso) * 100) / 100)
-    setQty(product, next)
+    const resultado = setQty(product, next)
+    if (!resultado.ok) {
+      setLimiteError(resultado.reason)
+      setTimeout(() => setLimiteError(''), 3000)
+    }
   }
 
   function enviarPorWhatsApp() {
@@ -188,6 +193,12 @@ export default function Carrito() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <h1 className="font-display text-3xl font-bold text-charcoal">Tu carrito</h1>
+
+      {limiteError && (
+        <p className="mt-3 rounded-xl border border-crate/30 bg-crate/5 px-4 py-2 text-sm font-medium text-crate">
+          {limiteError}
+        </p>
+      )}
 
       {/* Lista de productos */}
       <div className="mt-6 divide-y divide-line rounded-card border border-line bg-white shadow-soft">

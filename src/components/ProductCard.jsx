@@ -39,6 +39,7 @@ export default function ProductCard({ product }) {
 
   const [qty, setQty]         = useState(paso)
   const [agregado, setAgregado] = useState(false)
+  const [limiteError, setLimiteError] = useState('')
 
   function seleccionarVariante(idx) {
     setActiveIdx(idx)
@@ -54,7 +55,12 @@ export default function ProductCard({ product }) {
   }
 
   function handleAgregar() {
-    addToCart(activo, qty)
+    const resultado = addToCart(activo, qty)
+    if (!resultado.ok) {
+      setLimiteError(resultado.reason)
+      setTimeout(() => setLimiteError(''), 3000)
+      return
+    }
     setAgregado(true)
     setTimeout(() => setAgregado(false), 1500)
   }
@@ -165,6 +171,9 @@ export default function ProductCard({ product }) {
             {agregado ? '✓ Listo' : 'Agregar'}
           </button>
         </div>
+        {limiteError && (
+          <p className="text-[11px] leading-tight text-crate font-medium">{limiteError}</p>
+        )}
       </div>
     </div>
   )
