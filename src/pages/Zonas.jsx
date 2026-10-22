@@ -23,8 +23,17 @@ export default function Zonas() {
           ¿Llegamos a tu domicilio?
         </h1>
         <p className="mt-2 text-sm text-charcoal/70">
-          Si tu dirección está dentro de alguna de estas zonas, te llevamos el pedido hasta la puerta de tu casa.
+          Tratamos de abarcar la mayor cantidad de zonas posible, pero para estar seguros
+          consultanos por WhatsApp si llegamos hasta tu domicilio.
         </p>
+        <a
+          href="https://wa.me/5493814571329?text=Hola!%20Quer%C3%ADa%20consultar%20si%20llegan%20con%20el%20env%C3%ADo%20a%20mi%20zona"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-block text-sm font-semibold text-leaf underline underline-offset-2"
+        >
+          💬 WhatsApp 381 457-1329
+        </a>
       </div>
 
       <h2 className="mt-10 mb-4 font-display text-xl font-semibold text-charcoal">
