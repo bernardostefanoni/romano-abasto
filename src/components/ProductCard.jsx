@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useCart } from '../context/CartContext.jsx'
+import { PEDIDOS_HABILITADOS } from '../lib/tiendaConfig.js'
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
@@ -55,6 +56,7 @@ export default function ProductCard({ product }) {
   }
 
   function handleAgregar() {
+    if (!PEDIDOS_HABILITADOS) return
     const resultado = addToCart(activo, qty)
     if (!resultado.ok) {
       setLimiteError(resultado.reason)
@@ -162,13 +164,16 @@ export default function ProductCard({ product }) {
           {/* Botón agregar al carrito */}
           <button
             onClick={handleAgregar}
+            disabled={!PEDIDOS_HABILITADOS}
             className={`w-full rounded-full px-3 py-2 text-xs font-semibold text-cream transition-colors sm:w-auto ${
-              agregado
-                ? 'bg-mustard'
-                : 'bg-leaf hover:bg-leafLight'
+              !PEDIDOS_HABILITADOS
+                ? 'bg-charcoal/30 cursor-not-allowed'
+                : agregado
+                  ? 'bg-mustard'
+                  : 'bg-leaf hover:bg-leafLight'
             }`}
           >
-            {agregado ? '✓ Listo' : 'Agregar'}
+            {!PEDIDOS_HABILITADOS ? 'No disponible' : agregado ? '✓ Listo' : 'Agregar'}
           </button>
         </div>
         {limiteError && (

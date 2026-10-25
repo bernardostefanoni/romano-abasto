@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
+import { PEDIDOS_HABILITADOS, MENSAJE_CIERRE } from '../lib/tiendaConfig.js'
 
 const LOGO_URL = 'https://qjjmgjbgzsnppvxwghhv.supabase.co/storage/v1/object/public/productos/logo-icono.jpeg'
 
@@ -18,6 +19,11 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-cream/95 backdrop-blur">
+      {!PEDIDOS_HABILITADOS && (
+        <div className="bg-crate px-4 py-2 text-center text-sm font-semibold text-cream">
+          🚫 {MENSAJE_CIERRE}
+        </div>
+      )}
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
 
         {/* Logo */}

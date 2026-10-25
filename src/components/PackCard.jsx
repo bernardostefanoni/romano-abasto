@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
+import { PEDIDOS_HABILITADOS } from '../lib/tiendaConfig.js'
 
 function formatPrice(n) {
   return Number(n).toLocaleString('es-AR')
@@ -21,6 +22,7 @@ export default function PackCard({ pack }) {
   const ahorroPct = subtotalSuelto > 0 ? (ahorro / subtotalSuelto) * 100 : 0
 
   function handleAgregar() {
+    if (!PEDIDOS_HABILITADOS) return
     addPackToCart(pack, 1)
     setAgregado(true)
     setTimeout(() => setAgregado(false), 1500)
@@ -95,11 +97,14 @@ export default function PackCard({ pack }) {
         <div className="mt-auto flex items-center gap-2 pt-2">
           <button
             onClick={handleAgregar}
+            disabled={!PEDIDOS_HABILITADOS}
             className={`flex-1 rounded-full px-4 py-2.5 text-sm font-semibold text-cream transition-colors ${
-              agregado ? 'bg-mustard' : 'bg-leaf hover:bg-leafLight'
+              !PEDIDOS_HABILITADOS
+                ? 'bg-charcoal/30 cursor-not-allowed'
+                : agregado ? 'bg-mustard' : 'bg-leaf hover:bg-leafLight'
             }`}
           >
-            {agregado ? '✓ Agregado' : 'Agregar al carrito'}
+            {!PEDIDOS_HABILITADOS ? 'No disponible' : agregado ? '✓ Agregado' : 'Agregar al carrito'}
           </button>
           <Link to={`/packs/${pack.id}`} className="btn-secondary shrink-0 px-4 py-2.5">
             Detalle
